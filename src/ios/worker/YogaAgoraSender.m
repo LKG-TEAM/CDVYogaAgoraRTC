@@ -34,6 +34,9 @@
     [self.senderView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(@([YogaAgoraShared shared].sender.margin));
     }];
+    [self senderViewRemakeConstraints];
+    self.senderView.title = self.title;
+    self.senderView.viewClean = self.viewClean;
 }
 
 - (void)senderViewRemakeConstraints
@@ -160,6 +163,12 @@
     [self senderViewRemakeConstraints];
 }
 
+- (void)setViewClean:(BOOL)viewClean
+{
+    _viewClean = viewClean;
+    self.senderView.viewClean = viewClean;
+}
+
 #pragma mark -- YogaAgoraSenderViewDatasource
 
 - (UIView *)containerView
@@ -171,7 +180,7 @@
 
 - (void)close
 {
-    [[YogaAgoraShared shared] leaveLiveRoom];
+    [[YogaAgoraShared shared] leave];
     [self.senderView removeFromSuperview];
     self.senderView = nil;
     

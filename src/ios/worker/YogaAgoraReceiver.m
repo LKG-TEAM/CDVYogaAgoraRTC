@@ -109,9 +109,9 @@
     }
 }
 
-- (void)addUid:(NSUInteger)uid
+- (void)addUid:(NSUInteger)uid title:(NSString *)title
 {
-    [self.receiverView addUid:uid];
+    [self.receiverView addUid:uid title:title];
 }
 
 #pragma mark -- Setter
@@ -176,6 +176,11 @@
     if (self.receiverView) {
         self.receiverView.itemSize = itemSize;
     }
+}
+
+- (void)setViewClean:(BOOL)viewClean
+{
+    _viewClean = viewClean;
 }
 
 #pragma mark -- YogaAgoraReceiverCollectionViewDatasource

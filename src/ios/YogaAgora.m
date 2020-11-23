@@ -2,6 +2,7 @@
 
 #import <Cordova/CDV.h>
 #import "YogaAgoraShared.h"
+#import "YogaAgoraUtil.h"
 
 @interface YogaAgora : CDVPlugin {
   // Member variables go here.
@@ -32,6 +33,25 @@
             [YogaAgoraShared shared].token = [params valueForKey:@"token"];
             [YogaAgoraShared shared].channelId = [params valueForKey:@"channelId"];
             [YogaAgoraShared shared].uid = [params valueForKey:@"uid"];
+            
+            if ([params valueForKey:@"mainColor"]) {
+                NSString *colorStr = [params valueForKey:@"mainColor"];
+                if ([colorStr hasPrefix:@"#"]) {
+                    [YogaAgoraShared shared].mainColor = [YogaAgoraUtil yoga_colorWithHexString:colorStr alpha:1.0];
+                }
+            }
+            if ([params valueForKey:@"mainBgColor"]) {
+                NSString *colorStr = [params valueForKey:@"mainBgColor"];
+                if ([colorStr hasPrefix:@"#"]) {
+                    [YogaAgoraShared shared].mainBgColor = [YogaAgoraUtil yoga_colorWithHexString:colorStr alpha:1.0];
+                }
+            }
+            if ([params valueForKey:@"mainDisableColor"]) {
+                NSString *colorStr = [params valueForKey:@"mainDisableColor"];
+                if ([colorStr hasPrefix:@"#"]) {
+                    [YogaAgoraShared shared].mainDisableColor = [YogaAgoraUtil yoga_colorWithHexString:colorStr alpha:1.0];
+                }
+            }
         }
     }
     
@@ -104,6 +124,7 @@
     NSLog(@">>>>>>>>>>>>>>>>[end][show:]");
 }
 
+/************************************* 布局 ****************************************/
 - (void)setLocalVideoViewLayout:(CDVInvokedUrlCommand*)command
 {
     NSLog(@">>>>>>>>>>>>>>>>[start][setLocalVideoViewLayout:]");
@@ -120,42 +141,6 @@
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Start setup receiver's ui setting"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@">>>>>>>>>>>>>>>>[end][setRemoteVideoViewLayout:]");
-}
-
-- (void)setVideoFrameRate:(CDVInvokedUrlCommand*)command
-{
-    NSLog(@">>>>>>>>>>>>>>>>[start][setVideoFrameRate:]");
-    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
-    
-    if (command.arguments.count == 1) {
-        NSNumber * firstArgument = command.arguments.firstObject;
-        
-        if (self.uiSetFlag == 1) {
-            [YogaAgoraShared shared].sender.videoFrameRate = [firstArgument intValue];
-        }
-    }
-    
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    NSLog(@">>>>>>>>>>>>>>>>[end][setVideoFrameRate:]");
-}
-
-- (void)setVideoDimension:(CDVInvokedUrlCommand*)command
-{
-    NSLog(@">>>>>>>>>>>>>>>>[start][setVideoDimension:]");
-    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
-    
-    if (command.arguments.count == 2) {
-        NSNumber * firstArgument = command.arguments.firstObject;
-        NSNumber * lastArgument = command.arguments.lastObject;
-        
-        if (self.uiSetFlag == 1) {
-            [YogaAgoraShared shared].sender.videoDimension = CGSizeMake([firstArgument doubleValue], [lastArgument doubleValue]);
-        }
-    }
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    NSLog(@">>>>>>>>>>>>>>>>[end][setVideoDimension:]");
 }
 
 - (void)setMargin:(CDVInvokedUrlCommand*)command
@@ -293,22 +278,43 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@">>>>>>>>>>>>>>>>[end][setHeight:]");
 }
+/************************************* 布局 ****************************************/
 
-- (void)addRemoteUserView:(CDVInvokedUrlCommand*)command
+/************************************* Agroa API ****************************************/
+- (void)setVideoFrameRate:(CDVInvokedUrlCommand*)command
 {
-    NSLog(@">>>>>>>>>>>>>>>>[start][addRemoteUserView:]");
+    NSLog(@">>>>>>>>>>>>>>>>[start][setVideoFrameRate:]");
     NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
     
     if (command.arguments.count == 1) {
-        NSNumber * firstArgument = command.arguments[0];
-        [[YogaAgoraShared shared].receiver addReceiverView];
-        [[YogaAgoraShared shared].receiver receiverViewRemakeConstraints];
-        [[YogaAgoraShared shared].receiver addUid:[firstArgument integerValue]];
+        NSNumber * firstArgument = command.arguments.firstObject;
+        
+        if (self.uiSetFlag == 1) {
+            [YogaAgoraShared shared].sender.videoFrameRate = [firstArgument intValue];
+        }
     }
     
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    NSLog(@">>>>>>>>>>>>>>>>[end][addRemoteUserView:]");
+    NSLog(@">>>>>>>>>>>>>>>>[end][setVideoFrameRate:]");
+}
+
+- (void)setVideoDimension:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][setVideoDimension:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    if (command.arguments.count == 2) {
+        NSNumber * firstArgument = command.arguments.firstObject;
+        NSNumber * lastArgument = command.arguments.lastObject;
+        
+        if (self.uiSetFlag == 1) {
+            [YogaAgoraShared shared].sender.videoDimension = CGSizeMake([firstArgument doubleValue], [lastArgument doubleValue]);
+        }
+    }
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][setVideoDimension:]");
 }
 
 - (void)muteAllRemoteVideoStreams:(CDVInvokedUrlCommand*)command
@@ -409,6 +415,41 @@
     NSLog(@">>>>>>>>>>>>>>>>[end][muteLocalAudio:]");
 }
 
+- (void)leave:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][leave:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    [[YogaAgoraShared shared] leave];
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][leave:]");
+}
+/************************************* Agroa API ****************************************/
+
+/************************************* UI属性设置 ****************************************/
+- (void)addRemoteUserView:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][addRemoteUserView:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    if (command.arguments.count >= 1) {
+        NSNumber * firstArgument = command.arguments[0];
+        NSString *title = nil;
+        if (command.arguments.count >= 2) {
+            title = command.arguments[1];
+        }
+        [[YogaAgoraShared shared].receiver addReceiverView];
+        [[YogaAgoraShared shared].receiver receiverViewRemakeConstraints];
+        [[YogaAgoraShared shared].receiver addUid:[firstArgument integerValue] title:title];
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][addRemoteUserView:]");
+}
+
 - (void)setRemoteViewScrollDirection:(CDVInvokedUrlCommand*)command
 {
     NSLog(@">>>>>>>>>>>>>>>>[start][setRemoteViewScrollDirection:]");
@@ -439,5 +480,65 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@">>>>>>>>>>>>>>>>[end][setRemoteViewItemSize:]");
 }
+
+- (void)setLocalTitle:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][setLocalTitle:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    if (command.arguments.count == 1) {
+        NSString *firstArgument = command.arguments[0];
+        [YogaAgoraShared shared].sender.title = firstArgument;
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][setLocalTitle:]");
+}
+
+- (void)removeLocalView:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][removeLocalView:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+//    [[YogaAgoraShared shared] leave];
+    [[YogaAgoraShared shared].sender.senderView removeFromSuperview];
+    [YogaAgoraShared shared].sender.senderView = nil;
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][removeLocalView:]");
+}
+
+- (void)removeRemoteView:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][removeRemoteView:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+//    [[YogaAgoraShared shared] leave];
+    [[YogaAgoraShared shared].receiver.receiverView removeFromSuperview];
+    [YogaAgoraShared shared].receiver.receiverView = nil;
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][removeRemoteView:]");
+}
+
+- (void)viewClean:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][viewClean:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    if (command.arguments.count == 1) {
+        NSNumber *firstArgument = command.arguments[0];
+        [YogaAgoraShared shared].sender.viewClean = [firstArgument boolValue];
+        [YogaAgoraShared shared].receiver.viewClean = [firstArgument boolValue];
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][viewClean:]");
+}
+/************************************* UI属性设置 ****************************************/
 
 @end

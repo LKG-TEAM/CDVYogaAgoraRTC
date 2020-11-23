@@ -24,7 +24,7 @@ typedef void(^YogaBlock_rtcEngine_firstLocalVideo)(CGSize size, NSInteger elapse
 - (NSString *)jsFuncFormat:(NSString *)str;
 
 /*********************************** 硬件控制声网api ****************************************/
-- (void)leaveLiveRoom;
+- (void)leave;
 - (void)switchCamera;
 - (void)videoEnableDisable;
 - (void)audioEnableDisable;
@@ -45,6 +45,9 @@ typedef void(^YogaBlock_rtcEngine_firstLocalVideo)(CGSize size, NSInteger elapse
 @property (nonatomic, strong) NSString *channelId;
 @property (nonatomic, strong) NSString *uid;
 //@property (nonatomic, strong) NSString *teacherUid;
+@property (nonatomic, strong) UIColor *mainColor;
+@property (nonatomic, strong) UIColor *mainBgColor;
+@property (nonatomic, strong) UIColor *mainDisableColor;
 
 @property (nonatomic, copy) YogaBlock_rtcEngine_firstLocalVideo yogaBlockFirstLocalVideo;
 

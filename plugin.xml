@@ -10,6 +10,9 @@
                 <param name="ios-package" value="YogaAgora" />
             </feature>
         </config-file>
+        <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+            <string>App uses camera.</string>
+        </config-file>
         <source-file src="src/ios/YogaAgora.m" />
         <source-file src="src/ios/YogaAgoraShared.h" />
         <source-file src="src/ios/YogaAgoraShared.m" />
@@ -25,6 +28,15 @@
         <source-file src="src/ios/worker/YogaAgoraReceiver.m" />
         <source-file src="src/ios/worker/YogaAgoraSender.h" />
         <source-file src="src/ios/worker/YogaAgoraSender.m" />
+        <source-file src="src/ios/util/YogaAgoraUtil.h" />
+        <source-file src="src/ios/util/YogaAgoraUtil.m" />
+        <source-file src="src/ios/model/YogaAgoraUserModel.h" />
+        <source-file src="src/ios/model/YogaAgoraUserModel.m" />
+
+        <source-file src="src/images/videoMute.png" />
+        <source-file src="src/images/videoOn.png" />
+        <source-file src="src/images/voiceMute.png" />
+        <source-file src="src/images/voiceOn.png" />
         <!-- <framework src="AgoraRtcEngine_iOS" type="podspec" spec="~> 3.1.2" /> -->
         <podspec>
             <config>

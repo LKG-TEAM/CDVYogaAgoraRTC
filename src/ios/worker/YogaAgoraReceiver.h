@@ -16,9 +16,13 @@
 
 - (void)addReceiverView;
 - (void)receiverViewRemakeConstraints;
-- (void)addUid:(NSUInteger)uid;
+- (void)addUid:(NSUInteger)uid title:(NSString *)title;
 
 @property (nonatomic, assign) BOOL isHorizontal;// 横向排列，默认NO
 @property (nonatomic, assign) CGSize itemSize;
+
+@property (nonatomic, assign) BOOL videoEnabled;// 别人的视频开启关闭状态，默认开启
+@property (nonatomic, assign) BOOL audioEnabled;// 别人的音频开启关闭状态，默认开启
+@property (nonatomic, assign) BOOL viewClean;// 整洁模式，视图上只存在标题一个ui控件，默认NO
 
 @end

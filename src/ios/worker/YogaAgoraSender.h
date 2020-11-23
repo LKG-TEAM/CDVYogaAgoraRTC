@@ -17,8 +17,10 @@
 @property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) CGFloat height;
 
+@property (nonatomic, strong) NSString *title;
 @property (nonatomic, assign) BOOL videoEnabled;// 自己的视频开启关闭状态，默认开启
 @property (nonatomic, assign) BOOL audioEnabled;// 自己的音频开启关闭状态，默认开启
+@property (nonatomic, assign) BOOL viewClean;// 整洁模式，视图上只存在标题一个ui控件，默认NO
 
 - (void)addSenderView;
 - (void)senderViewRemakeConstraints;

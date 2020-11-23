@@ -13,25 +13,21 @@ YogaAgoraRTC.showWithSheet = function (success, error) {
     exec(success, error, 'YogaAgora', 'showWithSheet', []);
 };
 
+/************************************* 布局 ****************************************/
 /*
- 设置本地视频采集fps(默认30)
- width
- height
+ 设置本地视频view的布局约束
 */
-YogaAgoraRTC.setVideoFrameRate = function (videoFrameRate, success, error) {
-    exec(success, error, 'YogaAgora', 'setVideoFrameRate', [videoFrameRate]);
+YogaAgoraRTC.setLocalVideoViewLayout = function (success, error) {
+    exec(success, error, 'YogaAgora', 'setLocalVideoViewLayout', []);
 };
 
 /*
- 设置本地视频采集分辨率(默认320x240)
- width
- height
+ 设置远程视频view的布局约束
 */
-YogaAgoraRTC.setVideoDimension = function (width, height, success, error) {
-    exec(success, error, 'YogaAgora', 'setVideoDimension', [width, height]);
+YogaAgoraRTC.setRemoteVideoViewLayout = function (success, error) {
+    exec(success, error, 'YogaAgora', 'setRemoteVideoViewLayout', []);
 };
-
-/************************************ 设置UI视图的位置 ****************************************/
+    
 YogaAgoraRTC.setMargin = function (top, left, bottom, right, success, error) {
     exec(success, error, 'YogaAgora', 'setMargin', [top, left, bottom, right]);
 };
@@ -59,27 +55,25 @@ YogaAgoraRTC.setWidth = function (width, success, error) {
 YogaAgoraRTC.setHeight = function (height, success, error) {
     exec(success, error, 'YogaAgora', 'setHeight', [height]);
 };
-/************************************ 设置UI视图的位置 ****************************************/
+/************************************* 布局 ****************************************/
 
+/************************************* Agroa API ****************************************/
 /*
- 设置本地视频view的布局约束
+ 设置本地视频采集fps(默认30)
+ width
+ height
 */
-YogaAgoraRTC.setLocalVideoViewLayout = function (success, error) {
-    exec(success, error, 'YogaAgora', 'setLocalVideoViewLayout', []);
+YogaAgoraRTC.setVideoFrameRate = function (videoFrameRate, success, error) {
+    exec(success, error, 'YogaAgora', 'setVideoFrameRate', [videoFrameRate]);
 };
 
 /*
- 设置远程视频view的布局约束
+ 设置本地视频采集分辨率(默认320x240)
+ width
+ height
 */
-YogaAgoraRTC.setRemoteVideoViewLayout = function (success, error) {
-    exec(success, error, 'YogaAgora', 'setRemoteVideoViewLayout', []);
-};
-
-/*
- 设置(添加)一个学生的远程视频view
-*/
-YogaAgoraRTC.addRemoteUserView = function (uid, success, error) {
-    exec(success, error, 'YogaAgora', 'addRemoteUserView', [uid]);
+YogaAgoraRTC.setVideoDimension = function (width, height, success, error) {
+    exec(success, error, 'YogaAgora', 'setVideoDimension', [width, height]);
 };
 
 /*
@@ -133,6 +127,22 @@ YogaAgoraRTC.muteLocalAudio = function (mute, success, error) {
 };
     
 /*
+ 离开直播
+*/
+YogaAgoraRTC.leave = function (success, error) {
+    exec(success, error, 'YogaAgora', 'leave', []);
+};
+/************************************* Agroa API ****************************************/
+    
+/************************************* UI属性设置 ****************************************/
+/*
+ 设置(添加)一个学生的远程视频view
+*/
+YogaAgoraRTC.addRemoteUserView = function (uid, title, success, error) {
+    exec(success, error, 'YogaAgora', 'addRemoteUserView', [uid, title]);
+};
+    
+/*
  设置远程用户collectionView的滑动方向
  isHorizontal  true/false
 */
@@ -148,5 +158,36 @@ YogaAgoraRTC.setRemoteViewScrollDirection = function (isHorizontal, success, err
 YogaAgoraRTC.setRemoteViewItemSize = function (width, height, success, error) {
     exec(success, error, 'YogaAgora', 'setRemoteViewItemSize', [width, height]);
 };
+    
+/*
+ 设置本地视频标题
+ title  标题
+*/
+YogaAgoraRTC.setLocalTitle = function (title, success, error) {
+    exec(success, error, 'YogaAgora', 'setLocalTitle', [title]);
+};
+    
+/*
+ 移除本地视频视图
+*/
+YogaAgoraRTC.removeLocalView = function (success, error) {
+    exec(success, error, 'YogaAgora', 'removeLocalView', []);
+};
+    
+/*
+ 移除远程视频视图
+*/
+YogaAgoraRTC.removeRemoteView = function (success, error) {
+    exec(success, error, 'YogaAgora', 'removeRemoteView', []);
+};
+    
+/*
+ 整洁模式，视图上只存在标题一个ui控件，默认false
+ clean true->纯净模式，false->正常模式
+*/
+YogaAgoraRTC.viewClean = function (clean, success, error) {
+    exec(success, error, 'YogaAgora', 'viewClean', [clean]);
+};
+/************************************* UI属性设置 ****************************************/
     
 module.exports = YogaAgoraRTC;

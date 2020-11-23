@@ -2,13 +2,14 @@
 #import <Masonry/Masonry.h>
 #import "YogaAgoraShared.h"
 #import "YogaAgoraReceiverCell.h"
+#import "YogaAgoraUserModel.h"
 
 @interface YogaAgoraReceiverCollectionView ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic, weak) id<YogaAgoraReceiverCollectionViewDelegate> delegate;
 @property (nonatomic, weak) id<YogaAgoraReceiverCollectionViewDatasource> datasource;
 
-@property (nonatomic, strong) NSMutableArray <NSNumber *>*uids;
+@property (nonatomic, strong) NSMutableArray <YogaAgoraUserModel *>*uids;
 
 @property (nonatomic, strong) UIButton *closeBtn;
 @property (nonatomic, strong) UICollectionViewFlowLayout *layout;
@@ -39,11 +40,11 @@
     [super didMoveToSuperview];
     if (self.datasource && [self.datasource respondsToSelector:@selector(containerView)]) {
         if (self && self.superview) {
-            [[self.datasource containerView] addSubview:self.closeBtn];
-            [self.closeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.width.height.equalTo(@40);
-                make.top.right.equalTo(self);
-            }];
+//            [[self.datasource containerView] addSubview:self.closeBtn];
+//            [self.closeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+//                make.width.height.equalTo(@40);
+//                make.top.right.equalTo(self);
+//            }];
         }
     }
 }
@@ -51,7 +52,7 @@
 - (void)removeFromSuperview
 {
     [super removeFromSuperview];
-    [self.closeBtn removeFromSuperview];
+//    [self.closeBtn removeFromSuperview];
 }
 
 - (void)closeAction
@@ -61,17 +62,20 @@
     }
 }
 
-- (void)addUid:(NSUInteger)uid
+- (void)addUid:(NSUInteger)uid title:(NSString *)title
 {
+    YogaAgoraUserModel *model = [YogaAgoraUserModel new];
+    model.uid = uid;
+    model.title = title;
     __block BOOL inside = NO;
-    [self.uids enumerateObjectsUsingBlock:^(NSNumber *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj integerValue] == uid) {
+    [self.uids enumerateObjectsUsingBlock:^(YogaAgoraUserModel *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (obj.uid == uid) {
             inside = YES;
             *stop = YES;
         }
     }];
     if (!inside) {
-        [self.uids addObject:[NSNumber numberWithInteger:uid]];
+        [self.uids addObject:model];
     }else {
         
     }
@@ -81,8 +85,8 @@
 - (void)removeUid:(NSUInteger)uid
 {
     __block NSInteger insideIndex = -1;
-    [self.uids enumerateObjectsUsingBlock:^(NSNumber *obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj integerValue] == uid) {
+    [self.uids enumerateObjectsUsingBlock:^(YogaAgoraUserModel *obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (obj.uid == uid) {
             insideIndex = idx;
             *stop = YES;
         }
@@ -111,7 +115,8 @@
     NSLog(@"[%s]self.uids: %@",__func__,self.uids);
     YogaAgoraReceiverCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"YogaAgoraReceiverCell" forIndexPath:indexPath];
     cell.index = indexPath.row;
-    cell.uid = [self.uids objectAtIndex:indexPath.row];
+    cell.model = [self.uids objectAtIndex:indexPath.row];
+    cell.viewClean = _viewClean;
     return cell;
 }
 
@@ -160,6 +165,12 @@
 - (void)setItemSize:(CGSize)itemSize
 {
     _itemSize = itemSize;
+    [self.collectionView reloadData];
+}
+
+- (void)setViewClean:(BOOL)viewClean
+{
+    _viewClean = viewClean;
     [self.collectionView reloadData];
 }
 

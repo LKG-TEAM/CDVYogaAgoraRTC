@@ -3,6 +3,7 @@
 #import <Masonry/Masonry.h>
 #import "YogaAgoraSenderView.h"
 #import "YogaAgoraReceiverView.h"
+#import "YogaAgoraUtil.h"
 
 @interface YogaAgoraShared ()<AgoraRtcEngineDelegate>
 
@@ -34,6 +35,9 @@ static dispatch_once_t onceToken;
         UIDevice *device = [UIDevice currentDevice]; //Get the device object
             [device beginGeneratingDeviceOrientationNotifications]; //Tell it to start monitoring the accelerometer for orientation
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationListener:) name:UIDeviceOrientationDidChangeNotification object:device];
+        _mainColor = [YogaAgoraUtil yoga_colorWithHexString:YogaColorMain alpha:1.0];
+        _mainBgColor = [YogaAgoraUtil yoga_colorWithHexString:YogaColorMainBg alpha:1.0];
+        _mainDisableColor = [UIColor lightGrayColor];
     }
     return self;
 }
@@ -143,10 +147,10 @@ static dispatch_once_t onceToken;
 
 - (NSString *)jsFuncFormat:(NSString *)str
 {
-    return [NSString stringWithFormat:@"yogaAgoraRTCListen%@",str];
+    return [NSString stringWithFormat:@"yogaAgoraRTC%@",str];
 }
 
-- (void)leaveLiveRoom
+- (void)leave
 {
     [self.agoraKit setupLocalVideo:nil];
     // 离开频道。
@@ -253,16 +257,16 @@ static dispatch_once_t onceToken;
     [[YogaAgoraShared shared].sender senderViewRemakeConstraints];
     
 #if DEBUG
-    [[YogaAgoraShared shared].receiver addReceiverView];
-    [[YogaAgoraShared shared].receiver receiverViewRemakeConstraints];
-    [[YogaAgoraShared shared].receiver addUid:2];
-    [[YogaAgoraShared shared].receiver addUid:3];
-    [[YogaAgoraShared shared].receiver addUid:4];
-    [[YogaAgoraShared shared].receiver addUid:5];
-    [[YogaAgoraShared shared].receiver addUid:6];
-    [[YogaAgoraShared shared].receiver addUid:7];
-    [[YogaAgoraShared shared].receiver addUid:8];
-    [[YogaAgoraShared shared].receiver addUid:9];
+//    [[YogaAgoraShared shared].receiver addReceiverView];
+//    [[YogaAgoraShared shared].receiver receiverViewRemakeConstraints];
+//    [[YogaAgoraShared shared].receiver addUid:2 title:@"我是学生2"];
+//    [[YogaAgoraShared shared].receiver addUid:3];
+//    [[YogaAgoraShared shared].receiver addUid:4];
+//    [[YogaAgoraShared shared].receiver addUid:5];
+//    [[YogaAgoraShared shared].receiver addUid:6];
+//    [[YogaAgoraShared shared].receiver addUid:7];
+//    [[YogaAgoraShared shared].receiver addUid:8];
+//    [[YogaAgoraShared shared].receiver addUid:9];
 #endif
 }
 
@@ -276,7 +280,7 @@ static dispatch_once_t onceToken;
             enabled = NO;
             break;
         case AgoraLocalVideoStreamStateCapturing:
-            
+            [[YogaAgoraShared shared].sender.senderView activityIndicatorViewStopAnimating];
             break;
         case AgoraLocalVideoStreamStateEncoding:
             [[YogaAgoraShared shared].sender.senderView activityIndicatorViewStopAnimating];
@@ -314,6 +318,60 @@ static dispatch_once_t onceToken;
     [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"Audio(%ld)",state]]];
     NSLog(@"我自己的音频%@",enabled?@"启用了":@"关闭了");
     [YogaAgoraShared shared].sender.audioEnabled = enabled;
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine remoteVideoStateChangedOfUid:(NSUInteger)uid state:(AgoraVideoRemoteState)state reason:(AgoraVideoRemoteStateReason)reason elapsed:(NSInteger)elapsed
+{
+    NSLog(@"%s",__func__);
+    NSLog(@"%ld",state);
+    BOOL enabled = YES;
+    switch (state) {
+        case AgoraVideoRemoteStateStopped:
+            enabled = NO;
+            break;
+        case AgoraVideoRemoteStateStarting:
+            break;
+        case AgoraVideoRemoteStateDecoding:
+            break;
+        case AgoraVideoRemoteStateFrozen:
+            enabled = NO;
+            break;
+        case AgoraVideoRemoteStateFailed:
+            enabled = NO;
+            break;
+        default:
+            break;
+    }
+    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"RemoteVideo(%ld,%ld)",uid,state]]];
+    NSLog(@"[%ld]的视频%@",uid,enabled?@"启用了":@"关闭了");
+    [YogaAgoraShared shared].receiver.videoEnabled = enabled;
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine remoteAudioStateChangedOfUid:(NSUInteger)uid state:(AgoraAudioRemoteState)state reason:(AgoraAudioRemoteStateReason)reason elapsed:(NSInteger)elapsed
+{
+    NSLog(@"%s",__func__);
+    NSLog(@"%ld",state);
+    BOOL enabled = YES;
+    switch (state) {
+        case AgoraAudioRemoteStateStopped:
+            enabled = NO;
+            break;
+        case AgoraAudioRemoteStateStarting:
+            break;
+        case AgoraAudioRemoteStateDecoding:
+            break;
+        case AgoraAudioRemoteStateFrozen:// 卡住了
+            enabled = NO;
+            break;
+        case AgoraAudioRemoteStateFailed:
+            enabled = NO;
+            break;
+        default:
+            break;
+    }
+    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"RemoteAudio(%ld,%ld)",uid,state]]];
+    NSLog(@"%ld的音频%@",uid,enabled?@"启用了":@"关闭了");
+    [YogaAgoraShared shared].receiver.audioEnabled = enabled;
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed
