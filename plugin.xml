@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="CDVYogaAgoraRTC" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>CDVYogaAgoraRTC</name>
+    <js-module name="CDVYogaAgoraRTC" src="www/CDVYogaAgoraRTC.js">
+        <clobbers target="YogaAgoraRTC" />
+    </js-module>
+    <platform name="ios">
+        <config-file parent="/*" target="config.xml">
+            <feature name="YogaAgora">
+                <param name="ios-package" value="YogaAgora" />
+            </feature>
+        </config-file>
+        <source-file src="src/ios/YogaAgora.m" />
+        <source-file src="src/ios/YogaAgoraShared.h" />
+        <source-file src="src/ios/YogaAgoraShared.m" />
+        <source-file src="src/ios/ui/view/YogaAgoraReceiverView.h" />
+        <source-file src="src/ios/ui/view/YogaAgoraReceiverView.m" />
+        <source-file src="src/ios/ui/view/YogaAgoraReceiverCollectionView.h" />
+        <source-file src="src/ios/ui/view/YogaAgoraReceiverCollectionView.m" />
+        <source-file src="src/ios/ui/view/YogaAgoraReceiverCell.h" />
+        <source-file src="src/ios/ui/view/YogaAgoraReceiverCell.m" />
+        <source-file src="src/ios/ui/view/YogaAgoraSenderView.h" />
+        <source-file src="src/ios/ui/view/YogaAgoraSenderView.m" />
+        <source-file src="src/ios/worker/YogaAgoraReceiver.h" />
+        <source-file src="src/ios/worker/YogaAgoraReceiver.m" />
+        <source-file src="src/ios/worker/YogaAgoraSender.h" />
+        <source-file src="src/ios/worker/YogaAgoraSender.m" />
+        <!-- <framework src="AgoraRtcEngine_iOS" type="podspec" spec="~> 3.1.2" /> -->
+        <podspec>
+            <config>
+                <source url="https://github.com/CocoaPods/Specs.git" />
+            </config>
+            <pods use-frameworks="true">
+                <pod name="AgoraRtcEngine_iOS"/>
+                <pod name="Masonry"/>
+            </pods>
+        </podspec>
+    </platform>
+</plugin>
