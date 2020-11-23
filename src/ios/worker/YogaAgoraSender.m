@@ -25,6 +25,17 @@
 
 #pragma mark -- Public method
 
+- (void)addSenderView
+{
+    if (!self.senderView) {
+        self.senderView = [[YogaAgoraSenderView alloc] initWithDelegate:self datasource:self];
+        [[[YogaAgoraShared shared] topViewController].view addSubview:self.senderView];
+    }
+    [self.senderView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(@([YogaAgoraShared shared].sender.margin));
+    }];
+}
+
 - (void)senderViewRemakeConstraints
 {
     if (!self.senderView.superview) {
@@ -149,20 +160,6 @@
     [self senderViewRemakeConstraints];
 }
 
-#pragma mark -- Getter
-
-- (YogaAgoraSenderView *)senderView
-{
-    if (!_senderView) {
-        _senderView = [[YogaAgoraSenderView alloc] initWithDelegate:self datasource:self];
-        [[[YogaAgoraShared shared] topViewController].view addSubview:_senderView];
-        [self.senderView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(@([YogaAgoraShared shared].sender.margin));
-        }];
-    }
-    return _senderView;
-}
-
 #pragma mark -- YogaAgoraSenderViewDatasource
 
 - (UIView *)containerView
@@ -177,6 +174,9 @@
     [[YogaAgoraShared shared] leaveLiveRoom];
     [self.senderView removeFromSuperview];
     self.senderView = nil;
+    
+    [[YogaAgoraShared shared].receiver.receiverView removeFromSuperview];
+    [YogaAgoraShared shared].receiver.receiverView = nil;
 }
 
 @end

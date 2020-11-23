@@ -20,6 +20,7 @@
 @property (nonatomic, assign) BOOL videoEnabled;// 自己的视频开启关闭状态，默认开启
 @property (nonatomic, assign) BOOL audioEnabled;// 自己的音频开启关闭状态，默认开启
 
+- (void)addSenderView;
 - (void)senderViewRemakeConstraints;
 
 @end

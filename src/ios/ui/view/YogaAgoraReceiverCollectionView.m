@@ -127,7 +127,14 @@
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (_itemSize.width > 0 && _itemSize.height > 0) {
-        return _itemSize;
+        CGSize newItemSize = _itemSize;
+        if (_itemSize.width > 0  && _itemSize.width <= 1) {
+            newItemSize.width = self.bounds.size.width*_itemSize.width;
+        }
+        if (_itemSize.height > 0  && _itemSize.height <= 1) {
+            newItemSize.height = self.bounds.size.height*_itemSize.height;
+        }
+        return newItemSize;
     }
     return CGSizeMake(self.bounds.size.width/2, self.bounds.size.height/2);
 }
@@ -137,8 +144,17 @@
 - (void)setIsHorizontal:(BOOL)isHorizontal
 {
     _isHorizontal = isHorizontal;
-    self.layout.scrollDirection = isHorizontal ? UICollectionViewScrollDirectionHorizontal : UICollectionViewScrollDirectionVertical;
-    [self.collectionView reloadData];
+    NSLog(@"isHorizontal>>>>>>>>>>>>>>: %@",isHorizontal?@"横向":@"竖向");
+    
+    UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
+    //设置布局方向为水平流布局
+    layout.scrollDirection = _isHorizontal ? UICollectionViewScrollDirectionHorizontal : UICollectionViewScrollDirectionVertical;
+    layout.minimumLineSpacing = 0;
+    layout.minimumInteritemSpacing = 0;
+    __weak __typeof(self) weakSelf = self;
+    [self.collectionView setCollectionViewLayout:layout animated:YES completion:^(BOOL finished) {
+        [weakSelf.collectionView reloadData];
+    }];
 }
 
 - (void)setItemSize:(CGSize)itemSize

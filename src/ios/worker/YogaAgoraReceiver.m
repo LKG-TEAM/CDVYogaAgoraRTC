@@ -162,6 +162,22 @@
     [self receiverViewRemakeConstraints];
 }
 
+- (void)setIsHorizontal:(BOOL)isHorizontal
+{
+    _isHorizontal = isHorizontal;
+    if (self.receiverView) {
+        self.receiverView.isHorizontal = isHorizontal;
+    }
+}
+
+- (void)setItemSize:(CGSize)itemSize
+{
+    _itemSize = itemSize;
+    if (self.receiverView) {
+        self.receiverView.itemSize = itemSize;
+    }
+}
+
 #pragma mark -- YogaAgoraReceiverCollectionViewDatasource
 
 - (UIView *)containerView

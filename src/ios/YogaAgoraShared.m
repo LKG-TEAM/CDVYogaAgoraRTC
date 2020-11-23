@@ -99,6 +99,7 @@ static dispatch_once_t onceToken;
         NSLog(@"[YogaAgoraShared shared].uid: %@",[YogaAgoraShared shared].uid);
         AgoraRtcVideoCanvas *videoCanvas = [[AgoraRtcVideoCanvas alloc] init];
         videoCanvas.uid = [[YogaAgoraShared shared].uid intValue];
+        [self.sender addSenderView];
         videoCanvas.view = self.sender.senderView;
         videoCanvas.renderMode = AgoraVideoRenderModeHidden;
         // 设置本地视图。
