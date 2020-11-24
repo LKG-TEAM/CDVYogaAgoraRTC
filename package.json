@@ -1,9 +1,9 @@
 {
-  "name": "cordova-plugin-agora-yoga",
+  "name": "CDVYogaAgoraRTC",
   "version": "0.0.1",
   "description": "",
   "cordova": {
-    "id": "cordova-plugin-agora-yoga",
+    "id": "CDVYogaAgoraRTC",
     "platforms": []
   },
   "keywords": [
