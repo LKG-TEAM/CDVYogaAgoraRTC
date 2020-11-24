@@ -169,6 +169,12 @@
     self.senderView.viewClean = viewClean;
 }
 
+- (void)setTitle:(NSString *)title
+{
+    _title = title;
+    self.senderView.title = title;
+}
+
 #pragma mark -- YogaAgoraSenderViewDatasource
 
 - (UIView *)containerView

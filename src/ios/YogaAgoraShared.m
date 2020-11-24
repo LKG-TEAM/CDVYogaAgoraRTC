@@ -63,7 +63,7 @@ static dispatch_once_t onceToken;
         default:
             break;
     }
-    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"DeviceOrientation(%ld)",o]]];
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"DeviceOrientation(%ld)",o]]];
 }
 
 #pragma mark -- Public method
@@ -145,11 +145,6 @@ static dispatch_once_t onceToken;
     [self setupAgora];
 }
 
-- (NSString *)jsFuncFormat:(NSString *)str
-{
-    return [NSString stringWithFormat:@"yogaAgoraRTC%@",str];
-}
-
 - (void)leave
 {
     [self.agoraKit setupLocalVideo:nil];
@@ -224,6 +219,73 @@ static dispatch_once_t onceToken;
     self.receiver.itemSize = itemSize;
 }
 
+- (int)setClientRole:(BOOL)isBroadcaster
+{
+    return [self.agoraKit setClientRole:isBroadcaster?AgoraClientRoleBroadcaster:AgoraClientRoleAudience];
+}
+
+- (AgoraConnectionStateType)getConnectionState
+{
+    return [self.agoraKit getConnectionState];
+}
+
+- (int)enableDualStream
+{
+    return [self.agoraKit enableDualStreamMode:YES];
+}
+
+- (int)stopAudioMixing
+{
+    return [self.agoraKit stopAudioMixing];
+}
+
+- (int)startAudioMixing:(NSString *_Nonnull)filePath loopback:(BOOL)loopback replace:(BOOL)replace cycle:(NSInteger)cycle
+{
+    return [self.agoraKit startAudioMixing:filePath loopback:loopback replace:replace cycle:cycle];
+}
+
+- (int)pauseAudioMixing
+{
+    return [self.agoraKit pauseAudioMixing];
+}
+
+- (int)resumeAudioMixing
+{
+    return [self.agoraKit resumeAudioMixing];
+}
+
+- (int)adjustAudioMixingVolume:(NSInteger)volume
+{
+    return [self.agoraKit adjustAudioMixingVolume:volume];
+}
+
+- (int)getAudioMixingCurrentPosition
+{
+    return [self.agoraKit getAudioMixingCurrentPosition];
+}
+
+- (int)getAudioMixingDuration
+{
+    return [self.agoraKit getAudioMixingDuration];
+}
+
+- (NSString *)getCallId
+{
+    return [self.agoraKit getCallId];
+}
+
+- (int)setRemoteVideoStream:(NSUInteger)uid
+                       type:(AgoraVideoStreamType)streamType
+{
+    return [self.agoraKit setRemoteVideoStream:uid type:streamType];
+}
+
+- (int)setVideoProfile
+{
+    AgoraVideoEncoderConfiguration *configuration = [[AgoraVideoEncoderConfiguration alloc] initWithSize:[YogaAgoraShared shared].sender.videoDimension frameRate:[YogaAgoraShared shared].sender.videoFrameRate bitrate:AgoraVideoBitrateStandard orientationMode:AgoraVideoOutputOrientationModeAdaptative];
+    return [self.agoraKit setVideoEncoderConfiguration:configuration];
+}
+
 #pragma mark -- Getter
 
 - (YogaAgoraSender *)sender
@@ -242,6 +304,14 @@ static dispatch_once_t onceToken;
     return _receiver;
 }
 
+- (NSMutableDictionary *)commands
+{
+    if (!_commands) {
+        _commands = [NSMutableDictionary dictionary];
+    }
+    return _commands;
+}
+
 #pragma mark -- CDVScreenOrientationDelegate
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
@@ -255,19 +325,6 @@ static dispatch_once_t onceToken;
 {
     NSLog(@"%s",__func__);
     [[YogaAgoraShared shared].sender senderViewRemakeConstraints];
-    
-#if DEBUG
-//    [[YogaAgoraShared shared].receiver addReceiverView];
-//    [[YogaAgoraShared shared].receiver receiverViewRemakeConstraints];
-//    [[YogaAgoraShared shared].receiver addUid:2 title:@"我是学生2"];
-//    [[YogaAgoraShared shared].receiver addUid:3];
-//    [[YogaAgoraShared shared].receiver addUid:4];
-//    [[YogaAgoraShared shared].receiver addUid:5];
-//    [[YogaAgoraShared shared].receiver addUid:6];
-//    [[YogaAgoraShared shared].receiver addUid:7];
-//    [[YogaAgoraShared shared].receiver addUid:8];
-//    [[YogaAgoraShared shared].receiver addUid:9];
-#endif
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine localVideoStateChange:(AgoraLocalVideoStreamState)state error:(AgoraLocalVideoStreamError)error
@@ -291,9 +348,11 @@ static dispatch_once_t onceToken;
         default:
             break;
     }
-    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"Video(%ld)",state]]];
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"Video(%ld)",state]]];
     NSLog(@"我自己的视频%@",enabled?@"启用了":@"关闭了");
     [YogaAgoraShared shared].sender.videoEnabled = enabled;
+    
+    [YogaAgoraUtil commandCallback:@"localVideoStateChange" data:@{YAECallbackMainKey:@{@"state":[NSNumber numberWithInteger:state], @"reason":[NSNumber numberWithInteger:error]}}];
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine localAudioStateChange:(AgoraAudioLocalState)state error:(AgoraAudioLocalError)error
@@ -315,9 +374,11 @@ static dispatch_once_t onceToken;
         default:
             break;
     }
-    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"Audio(%ld)",state]]];
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"Audio(%ld)",state]]];
     NSLog(@"我自己的音频%@",enabled?@"启用了":@"关闭了");
     [YogaAgoraShared shared].sender.audioEnabled = enabled;
+    
+    [YogaAgoraUtil commandCallback:@"localAudioStateChange" data:@{YAECallbackMainKey:@{@"state":[NSNumber numberWithInteger:state], @"reason":[NSNumber numberWithInteger:error]}}];
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine remoteVideoStateChangedOfUid:(NSUInteger)uid state:(AgoraVideoRemoteState)state reason:(AgoraVideoRemoteStateReason)reason elapsed:(NSInteger)elapsed
@@ -342,7 +403,7 @@ static dispatch_once_t onceToken;
         default:
             break;
     }
-    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"RemoteVideo(%ld,%ld)",uid,state]]];
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"RemoteVideo(%ld,%ld)",uid,state]]];
     NSLog(@"[%ld]的视频%@",uid,enabled?@"启用了":@"关闭了");
     [YogaAgoraShared shared].receiver.videoEnabled = enabled;
 }
@@ -369,7 +430,7 @@ static dispatch_once_t onceToken;
         default:
             break;
     }
-    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"RemoteAudio(%ld,%ld)",uid,state]]];
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"RemoteAudio(%ld,%ld)",uid,state]]];
     NSLog(@"%ld的音频%@",uid,enabled?@"启用了":@"关闭了");
     [YogaAgoraShared shared].receiver.audioEnabled = enabled;
 }
@@ -378,15 +439,34 @@ static dispatch_once_t onceToken;
 {
     NSLog(@"%s",__func__);
     NSLog(@"uid: %ld",uid);
-    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"DidJoinedOfUidAndElapsed(%ld,%ld)",uid,elapsed]]];
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"DidJoinedOfUidAndElapsed(%ld,%ld)",uid,elapsed]]];
 }
 
+/*****/
+// rtc.client.on("onTokenPrivilegeWillExpire")
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine tokenPrivilegeWillExpire:(NSString * _Nonnull)token
+{
+    NSLog(@"%s",__func__);
+    NSMutableDictionary *data = [NSMutableDictionary dictionary];
+    [data setValue:token?:@"" forKey:YAECallbackMainKey];
+    [YogaAgoraUtil commandCallback:YAEOnTokenPrivilegeWillExpire data:[data copy]];
+}
+
+// rtc.client.on("peer-leave"
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason
 {
     NSLog(@"%s",__func__);
     NSLog(@"uid: %ld",uid);
     [[YogaAgoraShared shared].receiver.receiverView removeUid:uid];
-    [[YogaAgoraShared shared].commandDelegate evalJs:[[YogaAgoraShared shared] jsFuncFormat:[NSString stringWithFormat:@"DidOfflineOfUidAndReason(%ld,%ld)",uid,reason]]];
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"DidOfflineOfUidAndReason(%ld,%ld)",uid,reason]]];
+    
+    NSMutableDictionary *data = [NSMutableDictionary dictionary];
+    NSMutableDictionary *evt = [NSMutableDictionary dictionary];
+    [evt setObject:[NSNumber numberWithInteger:uid] forKey:@"uid"];
+    [evt setObject:[NSNumber numberWithInteger:reason] forKey:@"reason"];
+    [data setValue:[evt copy] forKey:YAECallbackMainKey];
+    [YogaAgoraUtil commandCallback:YAEPeerLeave data:[data copy]];
 }
+/*****/
 
 @end

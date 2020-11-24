@@ -21,12 +21,12 @@
     [YogaAgoraShared shared].commandDelegate = self.commandDelegate;
 }
 
-- (void)setUp:(CDVInvokedUrlCommand*)command
+- (void)init:(CDVInvokedUrlCommand*)command
 {
     NSLog(@">>>>>>>>>>>>>>>>[start][setUp:]");
     NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
     if (command.arguments.count == 1) {
-        NSNumber * firstArgument = command.arguments[0];
+        id firstArgument = command.arguments[0];
         if (firstArgument && [firstArgument isKindOfClass:NSDictionary.class]) {
             NSDictionary *params = (NSDictionary *)firstArgument;
             [YogaAgoraShared shared].appId = [params valueForKey:@"appId"];
@@ -55,8 +55,10 @@
         }
     }
     
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    [self.commandDelegate runInBackground:^{
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
     NSLog(@">>>>>>>>>>>>>>>>[end][setUp:]");
 }
 
@@ -70,7 +72,7 @@
     }];
 }
 
-- (void)showWithSheet:(CDVInvokedUrlCommand*)command
+- (void)joinWithSheet:(CDVInvokedUrlCommand*)command
 {
     NSLog(@">>>>>>>>>>>>>>>>[start][showWithSheet:]");
     NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
@@ -115,12 +117,14 @@
     NSLog(@">>>>>>>>>>>>>>>>[end][showWithSheet:]");
 }
 
-- (void)show:(CDVInvokedUrlCommand*)command
+- (void)join:(CDVInvokedUrlCommand*)command
 {
     NSLog(@">>>>>>>>>>>>>>>>[start][show:]");
     NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
     
     [[YogaAgoraShared shared] launchVideoViewIsBroadcaster:YES];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@">>>>>>>>>>>>>>>>[end][show:]");
 }
 
@@ -285,17 +289,19 @@
 {
     NSLog(@">>>>>>>>>>>>>>>>[start][setVideoFrameRate:]");
     NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
-    
-    if (command.arguments.count == 1) {
-        NSNumber * firstArgument = command.arguments.firstObject;
-        
-        if (self.uiSetFlag == 1) {
-            [YogaAgoraShared shared].sender.videoFrameRate = [firstArgument intValue];
-        }
-    }
-    
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    [self.commandDelegate runInBackground:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (command.arguments.count == 1) {
+                NSNumber * firstArgument = command.arguments.firstObject;
+                
+                if (self.uiSetFlag == 1) {
+                    [YogaAgoraShared shared].sender.videoFrameRate = [firstArgument intValue];
+                }
+            }
+        });
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
     NSLog(@">>>>>>>>>>>>>>>>[end][setVideoFrameRate:]");
 }
 
@@ -426,7 +432,289 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@">>>>>>>>>>>>>>>>[end][leave:]");
 }
+
+- (void)setClientRole:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][setClientRole:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    int result = 0;
+    if (command.arguments.count == 1) {
+        NSString *firstArgument = command.arguments[0];
+        if ([firstArgument isEqualToString:YAArgumentKeyClientRoleAudience]) {
+            result = [[YogaAgoraShared shared] setClientRole:YES];
+        }else {
+            result = [[YogaAgoraShared shared] setClientRole:NO];
+        }
+    }else {
+        result = [[YogaAgoraShared shared] setClientRole:YES];
+    }
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    if (result < 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];;
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][setClientRole:]");
+}
+
+- (void)getConnectionState:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][getConnectionState:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    NSMutableDictionary *data = [NSMutableDictionary dictionary];
+    [data setObject:[NSNumber numberWithInteger:[[YogaAgoraShared shared] getConnectionState]] forKey:@"state"];
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[data copy]];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][getConnectionState:]");
+}
+
+- (void)enableDualStream:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][enableDualStream:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = nil;
+    int result = [[YogaAgoraShared shared] enableDualStream];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][enableDualStream:]");
+}
+
+- (void)stopAudioMixing:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][stopAudioMixing:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = nil;
+    int result = [[YogaAgoraShared shared] stopAudioMixing];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][stopAudioMixing:]");
+}
+
+- (void)startAudioMixing:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][startAudioMixing:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    if (command.arguments.count == 1) {
+        id firstArgument = command.arguments[0];
+        if (firstArgument && [firstArgument isKindOfClass:NSDictionary.class]) {
+            NSDictionary *params = (NSDictionary *)firstArgument;
+            NSString *filePath = [params valueForKey:@"filePath"];
+            BOOL loopback = [[params objectForKey:@"loopback"] boolValue];
+            BOOL replace = [[params objectForKey:@"replace"] boolValue];
+            NSInteger cycle = [[params objectForKey:@"cycle"] integerValue];
+            
+            int result = [[YogaAgoraShared shared] startAudioMixing:filePath loopback:loopback replace:replace cycle:cycle];
+            if (result == 0) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+            }
+        }
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][startAudioMixing:]");
+}
+
+- (void)adjustAudioMixingVolume:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][adjustAudioMixingVolume:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    if (command.arguments.count == 1) {
+        NSNumber * firstArgument = command.arguments[0];
+        int result = [[YogaAgoraShared shared] adjustAudioMixingVolume:[firstArgument integerValue]];
+        if (result == 0) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+        }
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][adjustAudioMixingVolume:]");
+}
+
+- (void)getAudioMixingCurrentPosition:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][getAudioMixingCurrentPosition:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    int result = [[YogaAgoraShared shared] getAudioMixingCurrentPosition];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][getAudioMixingCurrentPosition:]");
+}
+
+- (void)getAudioMixingDuration:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][getAudioMixingDuration:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    int result = [[YogaAgoraShared shared] getAudioMixingDuration];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][getAudioMixingDuration:]");
+}
+
+- (void)muteVideo:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][muteVideo:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    int result = [[YogaAgoraShared shared] muteLocalVideo:YES];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][muteVideo:]");
+}
+
+- (void)unmuteVideo:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][unmuteVideo:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    int result = [[YogaAgoraShared shared] muteLocalVideo:NO];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][unmuteVideo:]");
+}
+
+- (void)muteAudio:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][muteAudio:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    int result = [[YogaAgoraShared shared] muteLocalAudio:YES];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][muteAudio:]");
+}
+
+- (void)unmuteAudio:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][unmuteAudio:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    int result = [[YogaAgoraShared shared] muteLocalAudio:NO];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][unmuteAudio:]");
+}
+
+- (void)pauseAudioMixing:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][pauseAudioMixing:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    int result = [[YogaAgoraShared shared] pauseAudioMixing];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][pauseAudioMixing:]");
+}
+
+- (void)resumeAudioMixing:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][resumeAudioMixing:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    int result = [[YogaAgoraShared shared] resumeAudioMixing];
+    if (result == 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][resumeAudioMixing:]");
+}
+
+- (void)getId:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][getId:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    
+    NSString *result = [[YogaAgoraShared shared] getCallId];
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:result];
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][getId:]");
+}
+
+- (void)setRemoteVideoStream:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][setRemoteVideoStream:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@""];
+    if (command.arguments.count == 2) {
+        NSNumber * firstArgument = command.arguments[0];
+        NSNumber * secondArgument = command.arguments[1];
+        int result = [[YogaAgoraShared shared] setRemoteVideoStream:[firstArgument integerValue] type:[secondArgument integerValue]];
+        if (result == 0) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+        }
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][setRemoteVideoStream:]");
+}
 /************************************* Agroa API ****************************************/
+
+/************************************* Agroa 事件回调 ****************************************/
+- (void)on:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][on:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    if (command.arguments.count == 1) {
+        NSString *firstArgument = command.arguments[0];
+        if (![firstArgument isKindOfClass:NSNull.class] && firstArgument.length > 0) {
+            [[YogaAgoraShared shared].commands setObject:command forKey:firstArgument];
+        }
+    }
+    
+    NSLog(@">>>>>>>>>>>>>>>>[end][on:]");
+}
+/************************************* Agroa 事件回调 ****************************************/
 
 /************************************* UI属性设置 ****************************************/
 - (void)addRemoteUserView:(CDVInvokedUrlCommand*)command
@@ -540,5 +828,22 @@
     NSLog(@">>>>>>>>>>>>>>>>[end][viewClean:]");
 }
 /************************************* UI属性设置 ****************************************/
+
+/************************************* Util ****************************************/
+- (void)NSLog:(CDVInvokedUrlCommand*)command
+{
+//    NSLog(@">>>>>>>>>>>>>>>>[start][NSLog:]");
+//    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    if (command.arguments.count == 1) {
+        NSString *firstArgument = command.arguments[0];
+        NSLog(@"[CDVYogaAgoraRTC]NSLog: %@",firstArgument);
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+//    NSLog(@">>>>>>>>>>>>>>>>[end][NSLog:]");
+}
+/************************************* Util ****************************************/
 
 @end

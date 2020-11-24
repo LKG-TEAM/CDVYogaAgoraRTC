@@ -21,7 +21,6 @@ typedef void(^YogaBlock_rtcEngine_firstLocalVideo)(CGSize size, NSInteger elapse
 - (void)setupAgora;
 - (void)clean;
 - (void)launchVideoViewIsBroadcaster:(BOOL)isBroadcaster;
-- (NSString *)jsFuncFormat:(NSString *)str;
 
 /*********************************** 硬件控制声网api ****************************************/
 - (void)leave;
@@ -34,6 +33,22 @@ typedef void(^YogaBlock_rtcEngine_firstLocalVideo)(CGSize size, NSInteger elapse
 - (int)muteAllRemoteAudioStreams:(BOOL)mute;
 - (int)muteLocalVideo:(BOOL)mute;
 - (int)muteLocalAudio:(BOOL)mute;
+- (int)setClientRole:(BOOL)isBroadcaster;
+- (AgoraConnectionStateType)getConnectionState;
+- (int)enableDualStream;
+
+- (int)stopAudioMixing;
+- (int)startAudioMixing:(NSString *_Nonnull)filePath loopback:(BOOL)loopback replace:(BOOL)replace cycle:(NSInteger)cycle;
+- (int)pauseAudioMixing;
+- (int)resumeAudioMixing;
+- (int)adjustAudioMixingVolume:(NSInteger)volume;
+- (int)getAudioMixingCurrentPosition;
+- (int)getAudioMixingDuration;
+
+- (NSString *)getCallId;
+
+- (int)setRemoteVideoStream:(NSUInteger)uid
+                       type:(AgoraVideoStreamType)streamTyp;
 /*********************************** 硬件控制声网api ****************************************/
 
 - (void)setCollectionViewScrollDirection:(BOOL)isHorizontal;
@@ -53,6 +68,8 @@ typedef void(^YogaBlock_rtcEngine_firstLocalVideo)(CGSize size, NSInteger elapse
 
 @property (nonatomic, strong) YogaAgoraSender *sender;
 @property (nonatomic, strong) YogaAgoraReceiver *receiver;
+
+@property (nonatomic, strong) NSMutableDictionary *commands;
 
 
 @end
