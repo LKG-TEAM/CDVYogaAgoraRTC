@@ -445,7 +445,7 @@ static dispatch_once_t onceToken;
     [YogaAgoraUtil commandCallback:YAEOnTokenPrivilegeWillExpire data:[data copy]];
 }
 
-// rtc.client.on("peer-leave"
+// rtc.client.on("peer-leave")
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason
 {
     NSLog(@"%s",__func__);
@@ -459,6 +459,7 @@ static dispatch_once_t onceToken;
     [YogaAgoraUtil commandCallback:YAEPeerLeave data:[evt copy]];
 }
 
+// rtc.client.on("stream-added")
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed
 {
     NSLog(@"%s",__func__);
@@ -469,6 +470,16 @@ static dispatch_once_t onceToken;
     [evt setObject:[NSNumber numberWithInteger:uid] forKey:@"uid"];
     [evt setObject:[NSNumber numberWithInteger:elapsed] forKey:@"elapsed"];
     [YogaAgoraUtil commandCallback:YAEStreamAdded data:[evt copy]];
+}
+
+// rtc.client.on("connection-state-change")
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine connectionChangedToState:(AgoraConnectionStateType)state reason:(AgoraConnectionChangedReason)reason
+{
+    NSLog(@"%s",__func__);
+    NSMutableDictionary *evt = [NSMutableDictionary dictionary];
+    [evt setObject:[NSNumber numberWithInteger:state] forKey:@"state"];
+    [evt setObject:[NSNumber numberWithInteger:reason] forKey:@"reason"];
+    [YogaAgoraUtil commandCallback:YAEConnectionStateChang data:[evt copy]];
 }
 /*****/
 
