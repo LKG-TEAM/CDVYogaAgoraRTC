@@ -352,7 +352,7 @@ static dispatch_once_t onceToken;
     NSLog(@"我自己的视频%@",enabled?@"启用了":@"关闭了");
     [YogaAgoraShared shared].sender.videoEnabled = enabled;
     
-    [YogaAgoraUtil commandCallback:@"localVideoStateChange" data:@{YAECallbackMainKey:@{@"state":[NSNumber numberWithInteger:state], @"reason":[NSNumber numberWithInteger:error]}}];
+    [YogaAgoraUtil commandCallback:@"localVideoStateChange" data:@{@"state":[NSNumber numberWithInteger:state], @"reason":[NSNumber numberWithInteger:error]}];
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine localAudioStateChange:(AgoraAudioLocalState)state error:(AgoraAudioLocalError)error
@@ -378,7 +378,7 @@ static dispatch_once_t onceToken;
     NSLog(@"我自己的音频%@",enabled?@"启用了":@"关闭了");
     [YogaAgoraShared shared].sender.audioEnabled = enabled;
     
-    [YogaAgoraUtil commandCallback:@"localAudioStateChange" data:@{YAECallbackMainKey:@{@"state":[NSNumber numberWithInteger:state], @"reason":[NSNumber numberWithInteger:error]}}];
+    [YogaAgoraUtil commandCallback:@"localAudioStateChange" data:@{@"state":[NSNumber numberWithInteger:state], @"reason":[NSNumber numberWithInteger:error]}];
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine remoteVideoStateChangedOfUid:(NSUInteger)uid state:(AgoraVideoRemoteState)state reason:(AgoraVideoRemoteStateReason)reason elapsed:(NSInteger)elapsed
@@ -435,20 +435,13 @@ static dispatch_once_t onceToken;
     [YogaAgoraShared shared].receiver.audioEnabled = enabled;
 }
 
-- (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed
-{
-    NSLog(@"%s",__func__);
-    NSLog(@"uid: %ld",uid);
-    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"DidJoinedOfUidAndElapsed(%ld,%ld)",uid,elapsed]]];
-}
-
 /*****/
 // rtc.client.on("onTokenPrivilegeWillExpire")
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine tokenPrivilegeWillExpire:(NSString * _Nonnull)token
 {
     NSLog(@"%s",__func__);
     NSMutableDictionary *data = [NSMutableDictionary dictionary];
-    [data setValue:token?:@"" forKey:YAECallbackMainKey];
+    [data setValue:token?:@"" forKey:@"token"];
     [YogaAgoraUtil commandCallback:YAEOnTokenPrivilegeWillExpire data:[data copy]];
 }
 
@@ -460,12 +453,22 @@ static dispatch_once_t onceToken;
     [[YogaAgoraShared shared].receiver.receiverView removeUid:uid];
     [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"DidOfflineOfUidAndReason(%ld,%ld)",uid,reason]]];
     
-    NSMutableDictionary *data = [NSMutableDictionary dictionary];
     NSMutableDictionary *evt = [NSMutableDictionary dictionary];
     [evt setObject:[NSNumber numberWithInteger:uid] forKey:@"uid"];
     [evt setObject:[NSNumber numberWithInteger:reason] forKey:@"reason"];
-    [data setValue:[evt copy] forKey:YAECallbackMainKey];
-    [YogaAgoraUtil commandCallback:YAEPeerLeave data:[data copy]];
+    [YogaAgoraUtil commandCallback:YAEPeerLeave data:[evt copy]];
+}
+
+- (void)rtcEngine:(AgoraRtcEngineKit *)engine didJoinedOfUid:(NSUInteger)uid elapsed:(NSInteger)elapsed
+{
+    NSLog(@"%s",__func__);
+    NSLog(@"uid: %ld",uid);
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"DidJoinedOfUidAndElapsed(%ld,%ld)",uid,elapsed]]];
+    
+    NSMutableDictionary *evt = [NSMutableDictionary dictionary];
+    [evt setObject:[NSNumber numberWithInteger:uid] forKey:@"uid"];
+    [evt setObject:[NSNumber numberWithInteger:elapsed] forKey:@"elapsed"];
+    [YogaAgoraUtil commandCallback:YAEStreamAdded data:[evt copy]];
 }
 /*****/
 
