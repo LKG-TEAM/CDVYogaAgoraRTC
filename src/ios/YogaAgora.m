@@ -52,6 +52,14 @@
                     [YogaAgoraShared shared].mainDisableColor = [YogaAgoraUtil yoga_colorWithHexString:colorStr alpha:1.0];
                 }
             }
+            if ([params valueForKey:@"enableVideo"]) {
+                BOOL enableVideo = [[params objectForKey:@"enableVideo"] boolValue];
+                [YogaAgoraShared shared].sender.videoEnabled = enableVideo;
+            }
+            if ([params valueForKey:@"enableAudio"]) {
+                BOOL enableAudio = [[params objectForKey:@"enableAudio"] boolValue];
+                [YogaAgoraShared shared].sender.audioEnabled = enableAudio;
+            }
         }
     }
     

@@ -32,7 +32,9 @@
 
 - (void)setupSubviews
 {
-    [self.activityIndicatorView startAnimating];
+    if ([YogaAgoraShared shared].sender.videoEnabled) {
+        [self.activityIndicatorView startAnimating];
+    }
 }
 
 - (void)didMoveToSuperview
@@ -89,6 +91,7 @@
 - (void)activityIndicatorViewStopAnimating
 {
     [self.activityIndicatorView stopAnimating];
+    [self.videoBtn setBackgroundImage:[UIImage imageNamed:[YogaAgoraShared shared].sender.videoEnabled?@"videoOn":@"videoMute" inBundle:[NSBundle mainBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
 }
 
 - (void)closeAction
@@ -201,7 +204,8 @@
 //        [_videoBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _videoBtn.titleLabel.font = [UIFont boldSystemFontOfSize:20];
         [_videoBtn addTarget:self action:@selector(enableVideoAction) forControlEvents:UIControlEventTouchUpInside];
-        [_videoBtn setBackgroundImage:[UIImage imageNamed:@"videoOn" inBundle:[NSBundle mainBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
+        
+        [_videoBtn setBackgroundImage:[UIImage imageNamed:[YogaAgoraShared shared].sender.videoEnabled?@"videoOn":@"videoMute" inBundle:[NSBundle mainBundle] compatibleWithTraitCollection:nil] forState:UIControlStateNormal];
     }
     return _videoBtn;
 }

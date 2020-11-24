@@ -92,8 +92,8 @@ static dispatch_once_t onceToken;
     [self.agoraKit enableDualStreamMode:YES];
     // Step 4, enable the video module
     [self.agoraKit enableVideo];
-    [self.agoraKit enableLocalVideo:YES];
-    [self.agoraKit enableLocalAudio:YES];
+    [self.agoraKit enableLocalVideo:self.sender.videoEnabled];
+    [self.agoraKit enableLocalAudio:self.sender.audioEnabled];
     // set video configuration
     AgoraVideoEncoderConfiguration *configuration = [[AgoraVideoEncoderConfiguration alloc] initWithSize:[YogaAgoraShared shared].sender.videoDimension frameRate:[YogaAgoraShared shared].sender.videoFrameRate bitrate:AgoraVideoBitrateStandard orientationMode:AgoraVideoOutputOrientationModeAdaptative];
     [self.agoraKit setVideoEncoderConfiguration:configuration];
