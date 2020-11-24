@@ -3,14 +3,15 @@ var exec = require('cordova/exec');
 var AgoraRTC = {};
 AgoraRTC.setUp = function (params, success, error) {
     exec(success, error, 'YogaAgora', 'setUp', [params]);
+    return AgoraRTC;
 };
 
-AgoraRTC.show = function (success, error) {
-    exec(success, error, 'YogaAgora', 'show', []);
+AgoraRTC.join = function (success, error) {
+    exec(success, error, 'YogaAgora', 'join', []);
 };
     
-AgoraRTC.showWithSheet = function (success, error) {
-    exec(success, error, 'YogaAgora', 'showWithSheet', []);
+AgoraRTC.joinWithSheet = function (success, error) {
+    exec(success, error, 'YogaAgora', 'joinWithSheet', []);
 };
 
 /************************************* 布局 ****************************************/
@@ -134,6 +135,15 @@ AgoraRTC.leave = function (success, error) {
 };
 /************************************* Agroa API ****************************************/
     
+/************************************* Agroa 事件回调 ****************************************/
+/*
+ 事件监听
+*/
+AgoraRTC.on = function (callbackName, success, error) {
+    exec(success, error, 'YogaAgora', 'on', [callbackName]);
+};
+/************************************* Agroa 事件回调 ****************************************/
+    
 /************************************* UI属性设置 ****************************************/
 /*
  设置(添加)一个学生的远程视频view
@@ -189,5 +199,15 @@ AgoraRTC.viewClean = function (clean, success, error) {
     exec(success, error, 'YogaAgora', 'viewClean', [clean]);
 };
 /************************************* UI属性设置 ****************************************/
+    
+/************************************* Util ****************************************/
+/*
+ 调用原生日志方法
+ log 日志
+*/
+AgoraRTC.NSLog = function (log, success, error) {
+    exec(success, error, 'YogaAgora', 'NSLog', [log]);
+};
+/************************************* Util ****************************************/
     
 module.exports = AgoraRTC;
