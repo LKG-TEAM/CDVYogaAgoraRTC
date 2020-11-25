@@ -3,12 +3,28 @@
 #import <Cordova/CDV.h>
 #import "YogaAgoraShared.h"
 #import "YogaAgoraUtil.h"
+#import <SafariServices/SafariServices.h>
+
+#define isIphoneX ({\
+int tmp = 0;\
+if (@available(iOS 11.0, *)) {\
+if (!UIEdgeInsetsEqualToEdgeInsets([UIApplication sharedApplication].delegate.window.safeAreaInsets, UIEdgeInsetsZero)) {\
+tmp = 1;\
+}else{\
+tmp = 0;\
+}\
+}else{\
+tmp = 0;\
+}\
+tmp;\
+})
 
 @interface YogaAgora : CDVPlugin {
   // Member variables go here.
 }
 
 @property (nonatomic, assign) NSInteger uiSetFlag;// 1->设置发送端的ui，2->设置接收端的ui
+@property (nonatomic, strong) SFSafariViewController *safariVC;
 
 @end
 
@@ -851,6 +867,47 @@
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 //    NSLog(@">>>>>>>>>>>>>>>>[end][NSLog:]");
+}
+
+- (void)safari:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][safari:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    if (command.arguments.count == 1) {
+        NSString *firstArgument = command.arguments[0];
+        self.safariVC = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:firstArgument]];
+        [self.viewController presentViewController:self.safariVC animated:NO completion:^{
+            CGRect frame = self.safariVC.view.frame;
+            CGFloat topOffsetY = 20;
+            if (isIphoneX) {
+                topOffsetY = 44;
+            }
+            CGFloat botOffsetY = 0;
+            if (isIphoneX) {
+                botOffsetY = 39;
+            }
+            frame.origin = CGPointMake(frame.origin.x, frame.origin.y - topOffsetY);
+            frame.size = CGSizeMake(frame.size.width, frame.size.height + topOffsetY + botOffsetY);
+            [self.safariVC.view setFrame:frame];
+        }];
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][safari:]");
+}
+
+- (void)dismiss:(CDVInvokedUrlCommand*)command
+{
+    NSLog(@">>>>>>>>>>>>>>>>[start][safari:]");
+    NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
+    
+    [self.safariVC dismissViewControllerAnimated:NO completion:nil];
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    NSLog(@">>>>>>>>>>>>>>>>[end][safari:]");
 }
 /************************************* Util ****************************************/
 

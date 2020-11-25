@@ -350,6 +350,21 @@ AgoraRTC.viewClean = function (clean, success, error) {
 AgoraRTC.NSLog = function (log, success, error) {
     exec(success, error, 'YogaAgora', 'NSLog', [log]);
 };
+
+/*
+    跳转内置safari
+    url 要访问的地址
+*/
+AgoraRTC.safari = function (url, success, error) {
+    exec(success, error, 'YogaAgora', 'safari', [url]);
+};
+    
+/*
+    内置safari dismiss
+*/
+AgoraRTC.dismiss = function (success, error) {
+    exec(success, error, 'YogaAgora', 'dismiss', []);
+};
 /************************************* Util ****************************************/
     
 module.exports = AgoraRTC;
