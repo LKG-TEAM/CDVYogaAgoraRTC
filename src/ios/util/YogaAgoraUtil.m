@@ -14,6 +14,7 @@ NSString * const YAEStreamAdded = @"stream-added";// 该回调通知应用远端
 NSString * const YAEStreamSubscribed = @"stream-subscribed";// 该回调通知应用已接收远端音视频流。
 NSString * const YAEOnTokenPrivilegeWillExpire = @"onTokenPrivilegeWillExpire";// 在 Token 过期前 30 秒，会收到该事件通知。
 NSString * const YAECallbackMainKey = @"evt";
+NSString * const YAESafariBack = @"safari-back";
 
 NSString * const YAArgumentKeyClientRoleAudience = @"audience";
 

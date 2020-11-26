@@ -37,6 +37,7 @@
         <source-file src="src/images/videoOn.png" />
         <source-file src="src/images/voiceMute.png" />
         <source-file src="src/images/voiceOn.png" />
+        <source-file src="src/images/back.png" />
         <!-- <framework src="AgoraRtcEngine_iOS" type="podspec" spec="~> 3.1.2" /> -->
         <podspec>
             <config>

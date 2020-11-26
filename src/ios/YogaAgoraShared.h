@@ -17,6 +17,7 @@ typedef void(^YogaBlock_rtcEngine_firstLocalVideo)(CGSize size, NSInteger elapse
 
 @property (nonatomic, strong) AgoraRtcEngineKit *agoraKit;
 
+- (UIWindow *)window;
 - (UIViewController *)topViewController;
 - (void)setupAgora;
 - (void)clean;

@@ -5,26 +5,13 @@
 #import "YogaAgoraUtil.h"
 #import <SafariServices/SafariServices.h>
 
-#define isIphoneX ({\
-int tmp = 0;\
-if (@available(iOS 11.0, *)) {\
-if (!UIEdgeInsetsEqualToEdgeInsets([UIApplication sharedApplication].delegate.window.safeAreaInsets, UIEdgeInsetsZero)) {\
-tmp = 1;\
-}else{\
-tmp = 0;\
-}\
-}else{\
-tmp = 0;\
-}\
-tmp;\
-})
-
 @interface YogaAgora : CDVPlugin {
   // Member variables go here.
 }
 
 @property (nonatomic, assign) NSInteger uiSetFlag;// 1->设置发送端的ui，2->设置接收端的ui
 @property (nonatomic, strong) SFSafariViewController *safariVC;
+@property (nonatomic, strong) UIButton *safariBackButton;
 
 @end
 
@@ -877,19 +864,18 @@ tmp;\
     if (command.arguments.count == 1) {
         NSString *firstArgument = command.arguments[0];
         self.safariVC = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:firstArgument]];
+        
         [self.viewController presentViewController:self.safariVC animated:NO completion:^{
             CGRect frame = self.safariVC.view.frame;
-            CGFloat topOffsetY = 20;
-            if (isIphoneX) {
-                topOffsetY = 44;
-            }
-            CGFloat botOffsetY = 0;
-            if (isIphoneX) {
-                botOffsetY = 39;
-            }
-            frame.origin = CGPointMake(frame.origin.x, frame.origin.y - topOffsetY);
-            frame.size = CGSizeMake(frame.size.width, frame.size.height + topOffsetY + botOffsetY);
+            
+            CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+            CGFloat botHeight = 44;
+            
+            frame.origin = CGPointMake(frame.origin.x, frame.origin.y - statusBarHeight);
+            frame.size = CGSizeMake(frame.size.width, frame.size.height + statusBarHeight + botHeight);
             [self.safariVC.view setFrame:frame];
+            
+            self.safariBackButton.frame = CGRectMake(15, statusBarHeight + 2, 60, 40);
         }];
     }
     
@@ -910,5 +896,33 @@ tmp;\
     NSLog(@">>>>>>>>>>>>>>>>[end][safari:]");
 }
 /************************************* Util ****************************************/
+
+- (void)safariBack
+{
+    [self.safariBackButton removeFromSuperview];
+    self.safariBackButton = nil;
+    [self.safariVC dismissViewControllerAnimated:YES completion:^{
+        [YogaAgoraUtil commandCallback:YAESafariBack data:nil];
+    }];
+}
+
+#pragma mark -- Getter
+
+- (UIButton *)safariBackButton
+{
+    if (!_safariBackButton) {
+        _safariBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _safariBackButton.layer.cornerRadius = 5;
+        [_safariBackButton addTarget:self action:@selector(safariBack) forControlEvents:UIControlEventTouchUpInside];
+        _safariBackButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.2];
+        [[YogaAgoraShared shared].window addSubview:_safariBackButton];
+        UIImageView *backImgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"back" inBundle:[NSBundle mainBundle] compatibleWithTraitCollection:nil]];
+        backImgV.frame = CGRectMake(5, 5, 15, 30);
+        [_safariBackButton addSubview:backImgV];
+        
+        [YogaAgoraShared shared].window.backgroundColor = [UIColor whiteColor];
+    }
+    return _safariBackButton;
+}
 
 @end

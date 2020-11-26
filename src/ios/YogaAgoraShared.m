@@ -68,6 +68,15 @@ static dispatch_once_t onceToken;
 
 #pragma mark -- Public method
 
+- (UIWindow *)window
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    if ([app.delegate respondsToSelector:@selector(window)]) {
+        return [app.delegate window];
+    }
+    return [app keyWindow];
+}
+
 - (UIViewController *)topViewController
 {
     if ([YogaAgoraShared shared].viewController) {
