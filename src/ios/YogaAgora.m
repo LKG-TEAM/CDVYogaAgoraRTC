@@ -868,7 +868,7 @@
         [self.viewController presentViewController:self.safariVC animated:NO completion:^{
             CGRect frame = self.safariVC.view.frame;
             
-            CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+            CGFloat statusBarHeight = 44;
             CGFloat botHeight = 44;
             
             frame.origin = CGPointMake(frame.origin.x, frame.origin.y - statusBarHeight);
