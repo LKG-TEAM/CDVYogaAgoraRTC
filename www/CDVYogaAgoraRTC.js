@@ -1,16 +1,16 @@
 var exec = require('cordova/exec');
 
-var AgoraRTC = {};
-AgoraRTC.init = function (params, success, error) {
+var AgoraRTC_IOS = {};
+AgoraRTC_IOS.init = function (params, success, error) {
     exec(success, error, 'YogaAgora', 'init', [params]);
     return AgoraRTC;
 };
 
-AgoraRTC.join = function (success, error) {
+AgoraRTC_IOS.join = function (success, error) {
     exec(success, error, 'YogaAgora', 'join', []);
 };
     
-AgoraRTC.joinWithSheet = function (success, error) {
+AgoraRTC_IOS.joinWithSheet = function (success, error) {
     exec(success, error, 'YogaAgora', 'joinWithSheet', []);
 };
 
@@ -18,42 +18,42 @@ AgoraRTC.joinWithSheet = function (success, error) {
 /*
     设置本地视频view的布局约束
 */
-AgoraRTC.setLocalVideoViewLayout = function (success, error) {
+AgoraRTC_IOS.setLocalVideoViewLayout = function (success, error) {
     exec(success, error, 'YogaAgora', 'setLocalVideoViewLayout', []);
 };
 
 /*
     设置远程视频view的布局约束
 */
-AgoraRTC.setRemoteVideoViewLayout = function (success, error) {
+AgoraRTC_IOS.setRemoteVideoViewLayout = function (success, error) {
     exec(success, error, 'YogaAgora', 'setRemoteVideoViewLayout', []);
 };
     
-AgoraRTC.setMargin = function (top, left, bottom, right, success, error) {
+AgoraRTC_IOS.setMargin = function (top, left, bottom, right, success, error) {
     exec(success, error, 'YogaAgora', 'setMargin', [top, left, bottom, right]);
 };
     
-AgoraRTC.setMarginTop = function (top, success, error) {
+AgoraRTC_IOS.setMarginTop = function (top, success, error) {
     exec(success, error, 'YogaAgora', 'setMarginTop', [top]);
 };
 
-AgoraRTC.setMarginLeft = function (left, success, error) {
+AgoraRTC_IOS.setMarginLeft = function (left, success, error) {
     exec(success, error, 'YogaAgora', 'setMarginLeft', [left]);
 };
 
-AgoraRTC.setMarginBottom = function (bottom, success, error) {
+AgoraRTC_IOS.setMarginBottom = function (bottom, success, error) {
     exec(success, error, 'YogaAgora', 'setMarginBottom', [bottom]);
 };
 
-AgoraRTC.setMarginRight = function (right, success, error) {
+AgoraRTC_IOS.setMarginRight = function (right, success, error) {
     exec(success, error, 'YogaAgora', 'setMarginRight', [right]);
 };
 
-AgoraRTC.setWidth = function (width, success, error) {
+AgoraRTC_IOS.setWidth = function (width, success, error) {
     exec(success, error, 'YogaAgora', 'setWidth', [width]);
 };
 
-AgoraRTC.setHeight = function (height, success, error) {
+AgoraRTC_IOS.setHeight = function (height, success, error) {
     exec(success, error, 'YogaAgora', 'setHeight', [height]);
 };
 /************************************* 布局 ****************************************/
@@ -64,7 +64,7 @@ AgoraRTC.setHeight = function (height, success, error) {
     width
     height
 */
-AgoraRTC.setVideoFrameRate = function (videoFrameRate, success, error) {
+AgoraRTC_IOS.setVideoFrameRate = function (videoFrameRate, success, error) {
     exec(success, error, 'YogaAgora', 'setVideoFrameRate', [videoFrameRate]);
 };
 
@@ -73,7 +73,7 @@ AgoraRTC.setVideoFrameRate = function (videoFrameRate, success, error) {
     width
     height
 */
-AgoraRTC.setVideoDimension = function (width, height, success, error) {
+AgoraRTC_IOS.setVideoDimension = function (width, height, success, error) {
     exec(success, error, 'YogaAgora', 'setVideoDimension', [width, height]);
 };
 
@@ -81,7 +81,7 @@ AgoraRTC.setVideoDimension = function (width, height, success, error) {
     禁止所有用户视频
     mute  true/false
 */
-AgoraRTC.muteAllRemoteVideoStreams = function (mute, success, error) {
+AgoraRTC_IOS.muteAllRemoteVideoStreams = function (mute, success, error) {
     exec(success, error, 'YogaAgora', 'muteAllRemoteVideoStreams', [mute]);
 };
     
@@ -89,7 +89,7 @@ AgoraRTC.muteAllRemoteVideoStreams = function (mute, success, error) {
     禁止所有用户音频
     mute  true/false
 */
-AgoraRTC.muteAllRemoteAudioStreams = function (mute, success, error) {
+AgoraRTC_IOS.muteAllRemoteAudioStreams = function (mute, success, error) {
     exec(success, error, 'YogaAgora', 'muteAllRemoteAudioStreams', [mute]);
 };
     
@@ -98,7 +98,7 @@ AgoraRTC.muteAllRemoteAudioStreams = function (mute, success, error) {
     uid
     mute  true/false
 */
-AgoraRTC.muteRemoteVideoStream = function (uid, mute, success, error) {
+AgoraRTC_IOS.muteRemoteVideoStream = function (uid, mute, success, error) {
     exec(success, error, 'YogaAgora', 'muteRemoteVideoStream', [uid, mute]);
 };
     
@@ -107,7 +107,7 @@ AgoraRTC.muteRemoteVideoStream = function (uid, mute, success, error) {
     uid
     mute  true/false
 */
-AgoraRTC.muteRemoteAudioStream = function (uid, mute, success, error) {
+AgoraRTC_IOS.muteRemoteAudioStream = function (uid, mute, success, error) {
     exec(success, error, 'YogaAgora', 'muteRemoteAudioStream', [uid, mute]);
 };
     
@@ -115,7 +115,7 @@ AgoraRTC.muteRemoteAudioStream = function (uid, mute, success, error) {
     禁用本地视频
     mute  true/false
 */
-AgoraRTC.muteLocalVideo = function (mute, success, error) {
+AgoraRTC_IOS.muteLocalVideo = function (mute, success, error) {
     exec(success, error, 'YogaAgora', 'muteLocalVideo', [mute]);
 };
     
@@ -123,14 +123,14 @@ AgoraRTC.muteLocalVideo = function (mute, success, error) {
     禁止本地音频
     mute  true/false
 */
-AgoraRTC.muteLocalAudio = function (mute, success, error) {
+AgoraRTC_IOS.muteLocalAudio = function (mute, success, error) {
     exec(success, error, 'YogaAgora', 'muteLocalAudio', [mute]);
 };
     
 /*
     离开直播
 */
-AgoraRTC.leave = function (success, error) {
+AgoraRTC_IOS.leave = function (success, error) {
     exec(success, error, 'YogaAgora', 'leave', []);
 };
     
@@ -138,7 +138,7 @@ AgoraRTC.leave = function (success, error) {
     设置直播场景的用户角色
     role audience->观众，反之主播
 */
-AgoraRTC.setClientRole = function (role, success, error) {
+AgoraRTC_IOS.setClientRole = function (role, success, error) {
     exec(success, error, 'YogaAgora', 'setClientRole', [role]);
 };
     
@@ -152,21 +152,21 @@ AgoraRTC.setClientRole = function (role, success, error) {
             state == 5;// 失败
             }
 */
-AgoraRTC.getConnectionState = function (success, error) {
+AgoraRTC_IOS.getConnectionState = function (success, error) {
     exec(success, error, 'YogaAgora', 'getConnectionState', []);
 };
 
 /*
     开启双流模式
 */
-AgoraRTC.enableDualStream = function (success, error) {
+AgoraRTC_IOS.enableDualStream = function (success, error) {
     exec(success, error, 'YogaAgora', 'enableDualStream', []);
 };
     
 /*
     停止播放音乐文件
 */
-AgoraRTC.stopAudioMixing = function (success, error) {
+AgoraRTC_IOS.stopAudioMixing = function (success, error) {
     exec(success, error, 'YogaAgora', 'stopAudioMixing', []);
 };
     
@@ -188,7 +188,7 @@ AgoraRTC.stopAudioMixing = function (success, error) {
     正整数: 循环的次数
     -1：无限循环
 */
-AgoraRTC.startAudioMixing = function (options, success, error) {
+AgoraRTC_IOS.startAudioMixing = function (options, success, error) {
     exec(success, error, 'YogaAgora', 'startAudioMixing', [options]);
 };
     
@@ -196,7 +196,7 @@ AgoraRTC.startAudioMixing = function (options, success, error) {
     调节音乐文件的播放音量
     volume     音乐文件播放音量范围为 0~100。默认 100 为原始文件音量
 */
-AgoraRTC.adjustAudioMixingVolume = function (volume, success, error) {
+AgoraRTC_IOS.adjustAudioMixingVolume = function (volume, success, error) {
     exec(success, error, 'YogaAgora', 'adjustAudioMixingVolume', [volume]);
 };
     
@@ -205,7 +205,7 @@ AgoraRTC.adjustAudioMixingVolume = function (volume, success, error) {
     方法调用成功返回音乐文件播放进度
     < 0: 方法调用失败
 */
-AgoraRTC.getAudioMixingCurrentPosition = function (success, error) {
+AgoraRTC_IOS.getAudioMixingCurrentPosition = function (success, error) {
     exec(success, error, 'YogaAgora', 'getAudioMixingCurrentPosition', []);
 };
     
@@ -214,56 +214,56 @@ AgoraRTC.getAudioMixingCurrentPosition = function (success, error) {
     方法调用成功返回音乐文件时长
     < 0: 方法调用失败
 */
-AgoraRTC.getAudioMixingDuration = function (success, error) {
+AgoraRTC_IOS.getAudioMixingDuration = function (success, error) {
     exec(success, error, 'YogaAgora', 'getAudioMixingDuration', []);
 };
     
 /*
     禁用视频轨道
 */
-AgoraRTC.muteVideo = function (success, error) {
+AgoraRTC_IOS.muteVideo = function (success, error) {
     exec(success, error, 'YogaAgora', 'muteVideo', []);
 };
     
 /*
     启用视频轨道
 */
-AgoraRTC.unmuteVideo = function (success, error) {
+AgoraRTC_IOS.unmuteVideo = function (success, error) {
     exec(success, error, 'YogaAgora', 'unmuteVideo', []);
 };
     
 /*
     禁用音频轨道
 */
-AgoraRTC.muteAudio = function (success, error) {
+AgoraRTC_IOS.muteAudio = function (success, error) {
     exec(success, error, 'YogaAgora', 'muteAudio', []);
 };
 
 /*
     启用音频轨道
 */
-AgoraRTC.unmuteAudio = function (success, error) {
+AgoraRTC_IOS.unmuteAudio = function (success, error) {
     exec(success, error, 'YogaAgora', 'unmuteAudio', []);
 };
     
 /*
     暂停播放伴奏
 */
-AgoraRTC.pauseAudioMixing = function (success, error) {
+AgoraRTC_IOS.pauseAudioMixing = function (success, error) {
     exec(success, error, 'YogaAgora', 'pauseAudioMixing', []);
 };
     
 /*
     恢复播放伴奏
 */
-AgoraRTC.resumeAudioMixing = function (success, error) {
+AgoraRTC_IOS.resumeAudioMixing = function (success, error) {
     exec(success, error, 'YogaAgora', 'resumeAudioMixing', []);
 };
     
 /*
     获取当前音视频通话的id
 */
-AgoraRTC.getId = function (success, error) {
+AgoraRTC_IOS.getId = function (success, error) {
     exec(success, error, 'YogaAgora', 'getId', []);
 };
     
@@ -272,7 +272,7 @@ AgoraRTC.getId = function (success, error) {
     0 High-bitrate, high-resolution video stream.
     1 Low-bitrate, low-resolution video stream.
 */
-AgoraRTC.setRemoteVideoStream = function (uid, videoStreamType,success, error) {
+AgoraRTC_IOS.setRemoteVideoStream = function (uid, videoStreamType,success, error) {
     exec(success, error, 'YogaAgora', 'setRemoteVideoStream', [uid, videoStreamType]);
 };
 /************************************* Agroa API ****************************************/
@@ -281,7 +281,7 @@ AgoraRTC.setRemoteVideoStream = function (uid, videoStreamType,success, error) {
 /*
     事件监听
 */
-AgoraRTC.on = function (callbackName, success, error) {
+AgoraRTC_IOS.on = function (callbackName, success, error) {
     exec(success, error, 'YogaAgora', 'on', [callbackName]);
 };
 /************************************* Agroa 事件回调 ****************************************/
@@ -290,7 +290,7 @@ AgoraRTC.on = function (callbackName, success, error) {
 /*
     设置(添加)一个学生的远程视频view
 */
-AgoraRTC.addRemoteUserView = function (uid, title, success, error) {
+AgoraRTC_IOS.addRemoteUserView = function (uid, title, success, error) {
     exec(success, error, 'YogaAgora', 'addRemoteUserView', [uid, title]);
 };
     
@@ -298,7 +298,7 @@ AgoraRTC.addRemoteUserView = function (uid, title, success, error) {
     设置远程用户collectionView的滑动方向
     isHorizontal  true/false
 */
-AgoraRTC.setRemoteViewScrollDirection = function (isHorizontal, success, error) {
+AgoraRTC_IOS.setRemoteViewScrollDirection = function (isHorizontal, success, error) {
     exec(success, error, 'YogaAgora', 'setRemoteViewScrollDirection', [isHorizontal]);
 };
     
@@ -307,7 +307,7 @@ AgoraRTC.setRemoteViewScrollDirection = function (isHorizontal, success, error) 
     width  宽度
     height 高度
 */
-AgoraRTC.setRemoteViewItemSize = function (width, height, success, error) {
+AgoraRTC_IOS.setRemoteViewItemSize = function (width, height, success, error) {
     exec(success, error, 'YogaAgora', 'setRemoteViewItemSize', [width, height]);
 };
     
@@ -315,21 +315,21 @@ AgoraRTC.setRemoteViewItemSize = function (width, height, success, error) {
     设置本地视频标题
     title  标题
 */
-AgoraRTC.setLocalTitle = function (title, success, error) {
+AgoraRTC_IOS.setLocalTitle = function (title, success, error) {
     exec(success, error, 'YogaAgora', 'setLocalTitle', [title]);
 };
     
 /*
     移除本地视频视图
 */
-AgoraRTC.removeLocalView = function (success, error) {
+AgoraRTC_IOS.removeLocalView = function (success, error) {
     exec(success, error, 'YogaAgora', 'removeLocalView', []);
 };
     
 /*
     移除远程视频视图
 */
-AgoraRTC.removeRemoteView = function (success, error) {
+AgoraRTC_IOS.removeRemoteView = function (success, error) {
     exec(success, error, 'YogaAgora', 'removeRemoteView', []);
 };
     
@@ -337,7 +337,7 @@ AgoraRTC.removeRemoteView = function (success, error) {
     整洁模式，视图上只存在标题一个ui控件，默认false
     clean true->纯净模式，false->正常模式
 */
-AgoraRTC.viewClean = function (clean, success, error) {
+AgoraRTC_IOS.viewClean = function (clean, success, error) {
     exec(success, error, 'YogaAgora', 'viewClean', [clean]);
 };
 /************************************* UI属性设置 ****************************************/
@@ -347,7 +347,7 @@ AgoraRTC.viewClean = function (clean, success, error) {
     调用原生日志方法
     log 日志
 */
-AgoraRTC.NSLog = function (log, success, error) {
+AgoraRTC_IOS.NSLog = function (log, success, error) {
     exec(success, error, 'YogaAgora', 'NSLog', [log]);
 };
 
@@ -355,23 +355,23 @@ AgoraRTC.NSLog = function (log, success, error) {
     跳转内置safari
     url 要访问的地址
 */
-AgoraRTC.safari = function (url, success, error) {
+AgoraRTC_IOS.safari = function (url, success, error) {
     exec(success, error, 'YogaAgora', 'safari', [url]);
 };
     
 /*
     内置safari dismiss
 */
-AgoraRTC.dismiss = function (success, error) {
+AgoraRTC_IOS.dismiss = function (success, error) {
     exec(success, error, 'YogaAgora', 'dismiss', []);
 };
     
 /*
     内置safari share
 */
-AgoraRTC.share = function (url, success, error) {
+AgoraRTC_IOS.share = function (url, success, error) {
     exec(success, error, 'YogaAgora', 'share', [url]);
 };
 /************************************* Util ****************************************/
     
-module.exports = AgoraRTC;
+module.exports = AgoraRTC_IOS;
