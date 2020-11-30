@@ -48,7 +48,7 @@
             <pods use-frameworks="true">
                 <pod name="AgoraRtcEngine_iOS"/>
                 <pod name="Masonry"/>
-                <pod name="GCDWebServer"/>
+                <!-- <pod name="GCDWebServer"/> -->
             </pods>
         </podspec>
     </platform>
