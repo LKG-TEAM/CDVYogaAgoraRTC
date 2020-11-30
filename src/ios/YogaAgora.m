@@ -900,35 +900,39 @@
     NSLog(@">>>>>>>>>>>>>>>>[start][safari:]");
     NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
     
-    if (command.arguments.count == 1) {
-        NSString *firstArgument = command.arguments[0];
-        NSURL *url = nil;
-        if ([firstArgument hasPrefix:@"http://"] || [firstArgument hasPrefix:@"https://"]) {
-            url = [NSURL URLWithString:firstArgument];
-        }else {
-            url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:firstArgument ofType:@""]];
-        }
-        self.safariVC = [[SFSafariViewController alloc] initWithURL:url];
-        self.safariVC.modalPresentationStyle = UIModalPresentationFullScreen;
-        self.safariVC.delegate = self.yogaAgoraViewController;
-        self.safariVC.transitioningDelegate = self.yogaAgoraViewController; ///禁用侧滑
+    [self.commandDelegate runInBackground:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (command.arguments.count == 1) {
+                NSString *firstArgument = command.arguments[0];
+                NSURL *url = nil;
+                if ([firstArgument hasPrefix:@"http://"] || [firstArgument hasPrefix:@"https://"]) {
+                    url = [NSURL URLWithString:firstArgument];
+                }else {
+                    url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:firstArgument ofType:@""]];
+                }
+                self.safariVC = [[SFSafariViewController alloc] initWithURL:url];
+                self.safariVC.modalPresentationStyle = UIModalPresentationFullScreen;
+                self.safariVC.delegate = self.yogaAgoraViewController;
+                self.safariVC.transitioningDelegate = self.yogaAgoraViewController; ///禁用侧滑
+                
+                [self.viewController presentViewController:self.safariVC animated:NO completion:^{
+                    CGRect frame = self.safariVC.view.frame;
+
+                    CGFloat statusBarHeight = 44;
+                    CGFloat botHeight = 44;
+
+                    frame.origin = CGPointMake(frame.origin.x, frame.origin.y - statusBarHeight);
+                    frame.size = CGSizeMake(frame.size.width, frame.size.height + statusBarHeight + botHeight);
+                    [self.safariVC.view setFrame:frame];
+        //            [self addButtons];
+        //            self.safariBackButton.frame = CGRectMake(15, statusBarHeight + 2, 60, 40);
+                }];
+            }
+        });
         
-        [self.viewController presentViewController:self.safariVC animated:NO completion:^{
-            CGRect frame = self.safariVC.view.frame;
-
-            CGFloat statusBarHeight = 44;
-            CGFloat botHeight = 44;
-
-            frame.origin = CGPointMake(frame.origin.x, frame.origin.y - statusBarHeight);
-            frame.size = CGSizeMake(frame.size.width, frame.size.height + statusBarHeight + botHeight);
-            [self.safariVC.view setFrame:frame];
-//            [self addButtons];
-//            self.safariBackButton.frame = CGRectMake(15, statusBarHeight + 2, 60, 40);
-        }];
-    }
-    
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
     NSLog(@">>>>>>>>>>>>>>>>[end][safari:]");
 }
 
