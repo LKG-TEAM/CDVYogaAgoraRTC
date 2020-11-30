@@ -949,12 +949,16 @@
     NSLog(@">>>>>>>>>>>>>>>>[start][share:]");
     NSLog(@">>>>>>>>>>>>>>>>command.arguments: %@", command.arguments);
     
-    UIActivityViewController *avc = [[UIActivityViewController alloc]initWithActivityItems:command.arguments applicationActivities:nil];
-    UIViewController *currentVC = self.safariVC;
-    if (!currentVC) {
-        currentVC = self.viewController;
-    }
-    [currentVC presentViewController:avc animated:YES completion:^{
+    [self.commandDelegate runInBackground:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIActivityViewController *avc = [[UIActivityViewController alloc]initWithActivityItems:command.arguments applicationActivities:nil];
+            UIViewController *currentVC = self.safariVC;
+            if (!currentVC) {
+                currentVC = self.viewController;
+            }
+            [currentVC presentViewController:avc animated:YES completion:^{
+            }];
+        });
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
