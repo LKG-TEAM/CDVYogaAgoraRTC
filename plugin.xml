@@ -14,42 +14,11 @@
             <string>App uses camera.</string>
         </config-file>
         <source-file src="src/ios/YogaAgora.m" />
-        <source-file src="src/ios/YogaAgoraShared.h" />
-        <source-file src="src/ios/YogaAgoraShared.m" />
-        <source-file src="src/ios/ui/view/YogaAgoraReceiverView.h" />
-        <source-file src="src/ios/ui/view/YogaAgoraReceiverView.m" />
-        <source-file src="src/ios/ui/view/YogaAgoraReceiverCollectionView.h" />
-        <source-file src="src/ios/ui/view/YogaAgoraReceiverCollectionView.m" />
-        <source-file src="src/ios/ui/view/YogaAgoraReceiverCell.h" />
-        <source-file src="src/ios/ui/view/YogaAgoraReceiverCell.m" />
-        <source-file src="src/ios/ui/view/YogaAgoraSenderView.h" />
-        <source-file src="src/ios/ui/view/YogaAgoraSenderView.m" />
         <source-file src="src/ios/ui/viewcontroller/YogaAgoraViewController.h" />
         <source-file src="src/ios/ui/viewcontroller/YogaAgoraViewController.m" />
-        <source-file src="src/ios/worker/YogaAgoraReceiver.h" />
-        <source-file src="src/ios/worker/YogaAgoraReceiver.m" />
-        <source-file src="src/ios/worker/YogaAgoraSender.h" />
-        <source-file src="src/ios/worker/YogaAgoraSender.m" />
         <source-file src="src/ios/util/YogaAgoraUtil.h" />
         <source-file src="src/ios/util/YogaAgoraUtil.m" />
-        <source-file src="src/ios/model/YogaAgoraUserModel.h" />
-        <source-file src="src/ios/model/YogaAgoraUserModel.m" />
-
-        <source-file src="src/images/videoMute.png" />
-        <source-file src="src/images/videoOn.png" />
-        <source-file src="src/images/voiceMute.png" />
-        <source-file src="src/images/voiceOn.png" />
-        <source-file src="src/images/back.png" />
-        <!-- <framework src="AgoraRtcEngine_iOS" type="podspec" spec="~> 3.1.2" /> -->
-        <podspec>
-            <config>
-                <source url="https://github.com/CocoaPods/Specs.git" />
-            </config>
-            <pods use-frameworks="true">
-                <pod name="AgoraRtcEngine_iOS"/>
-                <pod name="Masonry"/>
-                <!-- <pod name="GCDWebServer"/> -->
-            </pods>
-        </podspec>
+        <source-file src="src/ios/YogaAgoraShared.h" />
+        <source-file src="src/ios/YogaAgoraShared.m" />
     </platform>
 </plugin>
