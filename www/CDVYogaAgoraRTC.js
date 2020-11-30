@@ -365,6 +365,13 @@ AgoraRTC.safari = function (url, success, error) {
 AgoraRTC.dismiss = function (success, error) {
     exec(success, error, 'YogaAgora', 'dismiss', []);
 };
+    
+/*
+    内置safari share
+*/
+AgoraRTC.share = function (url, success, error) {
+    exec(success, error, 'YogaAgora', 'share', [url]);
+};
 /************************************* Util ****************************************/
     
 module.exports = AgoraRTC;

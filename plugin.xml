@@ -24,6 +24,8 @@
         <source-file src="src/ios/ui/view/YogaAgoraReceiverCell.m" />
         <source-file src="src/ios/ui/view/YogaAgoraSenderView.h" />
         <source-file src="src/ios/ui/view/YogaAgoraSenderView.m" />
+        <source-file src="src/ios/ui/viewcontroller/YogaAgoraViewController.h" />
+        <source-file src="src/ios/ui/viewcontroller/YogaAgoraViewController.m" />
         <source-file src="src/ios/worker/YogaAgoraReceiver.h" />
         <source-file src="src/ios/worker/YogaAgoraReceiver.m" />
         <source-file src="src/ios/worker/YogaAgoraSender.h" />

@@ -1,20 +1,22 @@
 /********* YogaAgora.m Cordova Plugin Implementation *******/
 
+#import <SafariServices/SafariServices.h>
 #import <Cordova/CDV.h>
 #import "YogaAgoraShared.h"
 #import "YogaAgoraUtil.h"
-#import <SafariServices/SafariServices.h>
-#import "GCDWebServer.h"
-#import "GCDWebServerDataResponse.h"
+#import "YogaAgoraViewController.h"
+//#import "GCDWebServer.h"
+//#import "GCDWebServerDataResponse.h"
 
 @interface YogaAgora : CDVPlugin {
   // Member variables go here.
-    GCDWebServer* _webServer;
+//    GCDWebServer* _webServer;
 }
 
 @property (nonatomic, assign) NSInteger uiSetFlag;// 1->设置发送端的ui，2->设置接收端的ui
 @property (nonatomic, strong) SFSafariViewController *safariVC;
 @property (nonatomic, strong) UIButton *safariBackButton;
+@property (nonatomic, strong) YogaAgoraViewController *yogaAgoraViewController;
 
 @end
 
@@ -25,26 +27,40 @@
     [super pluginInitialize];
     [YogaAgoraShared shared].viewController = self.viewController;
     [YogaAgoraShared shared].commandDelegate = self.commandDelegate;
+    self.yogaAgoraViewController = [[YogaAgoraViewController alloc] init];
     
     // Create server
-     _webServer = [[GCDWebServer alloc] init];
-     
-     // Add a handler to respond to GET requests on any URL
-    __weak __typeof(self) weakSelf = self;
-    [_webServer addDefaultHandlerForMethod:@"GET"
-                               requestClass:[GCDWebServerRequest class]
-                               processBlock:^GCDWebServerResponse *(GCDWebServerRequest* request) {
-         NSLog(@"request.path: %@",request.path);
-         if ([request.path isEqualToString:(@"/back")]) {
-             [weakSelf safariBack];
-         }
-       return [GCDWebServerDataResponse responseWithHTML:@"<html><body><p>Hello World</p></body></html>"];
-       
-     }];
-     
-     // Start server on port 8080
-     [_webServer startWithPort:8080 bonjourName:nil];
-     NSLog(@"Visit %@ in your web browser", _webServer.serverURL);
+//     _webServer = [[GCDWebServer alloc] init];
+//
+//     // Add a handler to respond to GET requests on any URL
+//    __weak __typeof(self) weakSelf = self;
+//    [_webServer addDefaultHandlerForMethod:@"GET"
+//                               requestClass:[GCDWebServerRequest class]
+//                               processBlock:^GCDWebServerResponse *(GCDWebServerRequest* request) {
+//         NSLog(@"request.path: %@",request.path);
+//         if ([request.path isEqualToString:(@"/back")]) {
+//             [weakSelf safariBack];
+//         }
+//       return [GCDWebServerDataResponse responseWithHTML:@"<html><body><p>Hello World</p></body></html>"];
+//
+//     }];
+//
+//     // Start server on port 8080
+//     [_webServer startWithPort:8080 bonjourName:nil];
+//     NSLog(@"Visit %@ in your web browser", _webServer.serverURL);
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openURL:) name:CDVPluginHandleOpenURLNotification object:nil];
+}
+
+- (void)openURL:(NSNotification *)n
+{
+    NSURL *url = [n object];
+    NSLog(@"[%s]url: %@",__func__, url);
+    NSString *a = [[url absoluteString] lowercaseString];
+    NSString *path = [a stringByReplacingOccurrencesOfString:@"zipyoga://" withString:@""];
+    if ([path isEqualToString:@"back"]) {
+        [self safariBack];
+    }
 }
 
 - (void)init:(CDVInvokedUrlCommand*)command
@@ -886,7 +902,16 @@
     
     if (command.arguments.count == 1) {
         NSString *firstArgument = command.arguments[0];
-        self.safariVC = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:firstArgument]];
+        NSURL *url = nil;
+        if ([firstArgument hasPrefix:@"http://"] || [firstArgument hasPrefix:@"https://"]) {
+            url = [NSURL URLWithString:firstArgument];
+        }else {
+            url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:firstArgument ofType:@""]];
+        }
+        self.safariVC = [[SFSafariViewController alloc] initWithURL:url];
+        self.safariVC.modalPresentationStyle = UIModalPresentationFullScreen;
+        self.safariVC.delegate = self.yogaAgoraViewController;
+        self.safariVC.transitioningDelegate = self.yogaAgoraViewController; ///禁用侧滑
         
         [self.viewController presentViewController:self.safariVC animated:NO completion:^{
             CGRect frame = self.safariVC.view.frame;
