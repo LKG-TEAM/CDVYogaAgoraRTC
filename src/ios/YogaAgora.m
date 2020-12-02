@@ -10,7 +10,7 @@
 
 @property (nonatomic, assign) NSInteger uiSetFlag;// 1->设置发送端的ui，2->设置接收端的ui
 @property (nonatomic, strong) SFSafariViewController *safariVC;
-@property (nonatomic, strong) UIButton *safariBackButton;
+@property (nonatomic, strong) UIView *overView;
 @property (nonatomic, strong) YogaAgoraViewController *yogaAgoraViewController;
 
 @end
@@ -95,13 +95,14 @@
                 
                 [self.viewController presentViewController:self.safariVC animated:NO completion:^{
                     CGRect frame = self.safariVC.view.frame;
-
-                    CGFloat statusBarHeight = 44;
-                    CGFloat botHeight = 44;
-
-                    frame.origin = CGPointMake(frame.origin.x, frame.origin.y - statusBarHeight);
-                    frame.size = CGSizeMake(frame.size.width, frame.size.height + statusBarHeight + botHeight);
-                    [self.safariVC.view setFrame:frame];
+                    CGFloat OffsetY = 44;
+                    
+                    frame.origin = CGPointMake(frame.origin.x, frame.origin.y - OffsetY);
+                    frame.size = CGSizeMake(frame.size.width, frame.size.height + OffsetY*2);
+                    
+                    self.safariVC.view.frame = frame;
+                    
+                    [self addOverView];
                 }];
             }
         });
@@ -147,11 +148,28 @@
 }
 /************************************* Util ****************************************/
 
+- (void)addOverView
+{
+    _overView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, UIScreen.mainScreen.bounds.size.width, UIApplication.sharedApplication.statusBarFrame.size.height)];
+    [_overView setBackgroundColor:UIColor.whiteColor];
+    [[YogaAgoraShared shared].window addSubview:_overView];
+    [YogaAgoraShared shared].window.backgroundColor = [UIColor whiteColor];
+}
+
+- (void)removeOverView
+{
+    if (self.overView && self.overView.superview) {
+        [self.overView removeFromSuperview];
+        self.overView = nil;
+    }
+}
+
 - (void)safariBack
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.safariVC) {
             [self.safariVC dismissViewControllerAnimated:YES completion:^{
+                [self removeOverView];
                 [YogaAgoraUtil commandCallback:YAESafariBack data:nil];
             }];
         }
