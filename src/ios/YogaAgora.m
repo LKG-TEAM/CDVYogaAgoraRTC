@@ -178,6 +178,25 @@
     }
 }
 
+- (CGRect)_safariFrameViOS13Support:(CGRect)frame
+{
+    CGSize screenSize = UIScreen.mainScreen.bounds.size;
+    CGFloat OffsetY = 44;
+    if (@available(iOS 14.0, *)) {
+        frame.origin = CGPointMake(0, -OffsetY);
+        frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY*2);
+    }else {
+        if (@available(iOS 13.0, *)) {///!!!: iOS13，SFSafariViewController在竖屏下实际y是44-状态栏高度
+            frame.origin = CGPointMake(0, -(OffsetY-20));
+            frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY + (OffsetY-20));
+        }else {
+            frame.origin = CGPointMake(0, -OffsetY);
+            frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY*2);
+        }
+    }
+    return frame;
+}
+
 - (void)safariFrameV
 {
     [self addOverView];
@@ -190,12 +209,10 @@
             frame.origin = CGPointMake(0, 0);
             frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY);
         }else {
-            frame.origin = CGPointMake(0, -OffsetY);
-            frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY*2);
+            frame = [self _safariFrameViOS13Support:frame];
         }
     }else {
-        frame.origin = CGPointMake(0, -OffsetY);
-        frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY*2);
+        frame = [self _safariFrameViOS13Support:frame];
     }
     
     self.safariVC.view.frame = frame;
