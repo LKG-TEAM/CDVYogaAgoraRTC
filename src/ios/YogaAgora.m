@@ -107,6 +107,7 @@
                 self.safariVC.transitioningDelegate = self.yogaAgoraViewController; ///禁用侧滑
                 
                 [self.viewController presentViewController:self.safariVC animated:NO completion:^{
+                    [YogaAgoraShared shared].window.backgroundColor = [UIColor whiteColor];
                     [self safariFrameRefresh];
                 }];
             }
