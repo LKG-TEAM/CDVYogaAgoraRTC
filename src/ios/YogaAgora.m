@@ -233,9 +233,12 @@
 
 - (void)addOverView
 {
-    _overView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, UIScreen.mainScreen.bounds.size.width, UIApplication.sharedApplication.statusBarFrame.size.height)];
-    [_overView setBackgroundColor:UIColor.whiteColor];
-    [[YogaAgoraShared shared].window addSubview:_overView];
+    if (!_overView) {
+        _overView = [[UIView alloc] init];
+        [_overView setBackgroundColor:UIColor.whiteColor];
+        [[YogaAgoraShared shared].window addSubview:_overView];
+    }
+    [_overView setFrame:CGRectMake(0, 0, UIScreen.mainScreen.bounds.size.width, UIApplication.sharedApplication.statusBarFrame.size.height)];
     [YogaAgoraShared shared].window.backgroundColor = [UIColor whiteColor];
 }
 
