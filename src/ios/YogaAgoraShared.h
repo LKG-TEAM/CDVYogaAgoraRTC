@@ -13,5 +13,6 @@
 
 @property (nonatomic, strong) NSMutableDictionary *commands;
 
+- (UIWindow *)window;
 
 @end
