@@ -20,11 +20,24 @@
 - (void)pluginInitialize
 {
     [super pluginInitialize];
+    
+    UIDevice *device = [UIDevice currentDevice]; //Get the device object
+        [device beginGeneratingDeviceOrientationNotifications]; //Tell it to start monitoring the accelerometer for orientation
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationListener:) name:UIDeviceOrientationDidChangeNotification object:device];
+    
     [YogaAgoraShared shared].viewController = self.viewController;
     [YogaAgoraShared shared].commandDelegate = self.commandDelegate;
     self.yogaAgoraViewController = [[YogaAgoraViewController alloc] init];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openURL:) name:CDVPluginHandleOpenURLNotification object:nil];
+}
+
+- (void)deviceOrientationListener:(NSNotification *)n
+{
+    UIDeviceOrientation o = [[UIDevice currentDevice] orientation];
+    [[YogaAgoraShared shared].commandDelegate evalJs:[YogaAgoraUtil jsFuncFormat:[NSString stringWithFormat:@"DeviceOrientation(%ld)",o]]];
+    
+    [self safariFrameRefresh];
 }
 
 - (void)openURL:(NSNotification *)n
@@ -94,25 +107,7 @@
                 self.safariVC.transitioningDelegate = self.yogaAgoraViewController; ///禁用侧滑
                 
                 [self.viewController presentViewController:self.safariVC animated:NO completion:^{
-                    CGRect frame = self.safariVC.view.frame;
-                    CGFloat OffsetY = 44;
-                    
-                    if (@available(iOS 11.0, *)) {
-                        if ([UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
-                            frame.origin = CGPointMake(frame.origin.x, frame.origin.y);
-                            frame.size = CGSizeMake(frame.size.width, frame.size.height + OffsetY);
-                        }else {
-                            frame.origin = CGPointMake(frame.origin.x, frame.origin.y - OffsetY);
-                            frame.size = CGSizeMake(frame.size.width, frame.size.height + OffsetY *2);
-                        }
-                    }else {
-                        frame.origin = CGPointMake(frame.origin.x, frame.origin.y - OffsetY);
-                        frame.size = CGSizeMake(frame.size.width, frame.size.height + OffsetY *2);
-                    }
-                    
-                    self.safariVC.view.frame = frame;
-                    
-                    [self addOverView];
+                    [self safariFrameRefresh];
                 }];
             }
         });
@@ -157,6 +152,67 @@
     NSLog(@">>>>>>>>>>>>>>>>[end][share:]");
 }
 /************************************* Util ****************************************/
+
+- (void)safariFrameRefresh
+{
+    UIDeviceOrientation o = [[UIDevice currentDevice] orientation];
+    switch (o) {
+        case UIDeviceOrientationPortrait:
+            NSLog(@"竖屏");
+            [self safariFrameV];
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            NSLog(@"倒屏");
+//            [self safariFrameV];
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            NSLog(@"左屏");
+            [self safariFrameH];
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            NSLog(@"右屏");
+            [self safariFrameH];
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)safariFrameV
+{
+    [self addOverView];
+    CGSize screenSize = UIScreen.mainScreen.bounds.size;
+    CGRect frame = self.safariVC.view.frame;
+    CGFloat OffsetY = 44;
+    
+    if (@available(iOS 11.0, *)) {
+        if ([UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
+            frame.origin = CGPointMake(0, 0);
+            frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY);
+        }else {
+            frame.origin = CGPointMake(0, -OffsetY);
+            frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY*2);
+        }
+    }else {
+        frame.origin = CGPointMake(0, -OffsetY);
+        frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY*2);
+    }
+    
+    self.safariVC.view.frame = frame;
+}
+
+- (void)safariFrameH
+{
+    [self removeOverView];
+    CGSize screenSize = UIScreen.mainScreen.bounds.size;
+    CGRect frame = self.safariVC.view.frame;
+    CGFloat OffsetY = 44;
+    
+    frame.origin = CGPointMake(0, -OffsetY);
+    frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY);
+    
+    self.safariVC.view.frame = frame;
+}
 
 - (void)addOverView
 {
