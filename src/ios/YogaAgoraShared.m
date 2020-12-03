@@ -68,4 +68,13 @@ static dispatch_once_t onceToken;
     return _commands;
 }
 
+- (UIWindow *)window
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    if ([app.delegate respondsToSelector:@selector(window)]) {
+        return [app.delegate window];
+    }
+    return [app keyWindow];
+}
+
 @end
