@@ -97,8 +97,18 @@
                     CGRect frame = self.safariVC.view.frame;
                     CGFloat OffsetY = 44;
                     
-                    frame.origin = CGPointMake(frame.origin.x, frame.origin.y - OffsetY);
-                    frame.size = CGSizeMake(frame.size.width, frame.size.height + OffsetY*2);
+                    if (@available(iOS 11.0, *)) {
+                        if ([UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
+                            frame.origin = CGPointMake(frame.origin.x, frame.origin.y);
+                            frame.size = CGSizeMake(frame.size.width, frame.size.height + OffsetY);
+                        }else {
+                            frame.origin = CGPointMake(frame.origin.x, frame.origin.y - OffsetY);
+                            frame.size = CGSizeMake(frame.size.width, frame.size.height + OffsetY *2);
+                        }
+                    }else {
+                        frame.origin = CGPointMake(frame.origin.x, frame.origin.y - OffsetY);
+                        frame.size = CGSizeMake(frame.size.width, frame.size.height + OffsetY *2);
+                    }
                     
                     self.safariVC.view.frame = frame;
                     
