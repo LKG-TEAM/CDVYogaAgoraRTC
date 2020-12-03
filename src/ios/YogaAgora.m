@@ -167,11 +167,11 @@
             break;
         case UIDeviceOrientationLandscapeLeft:
             NSLog(@"左屏");
-            [self safariFrameH];
+            [self safariFrameH:0];
             break;
         case UIDeviceOrientationLandscapeRight:
             NSLog(@"右屏");
-            [self safariFrameH];
+            [self safariFrameH:1];
             break;
         default:
             break;
@@ -218,15 +218,35 @@
     self.safariVC.view.frame = frame;
 }
 
-- (void)safariFrameH
+- (void)safariFrameH:(int)o
 {
     [self removeOverView];
     CGSize screenSize = UIScreen.mainScreen.bounds.size;
     CGRect frame = self.safariVC.view.frame;
     CGFloat OffsetY = 44;
+    CGFloat statusBarHeight = 20;
+    if (@available(iOS 11.0, *)) {
+        if ([UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
+            statusBarHeight = 44;
+        }
+    }
     
-    frame.origin = CGPointMake(0, -OffsetY);
-    frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY);
+    switch (o) {
+        case 0:// 左
+        {
+            frame.origin = CGPointMake(statusBarHeight, -OffsetY);
+        }
+            break;
+        case 1:// 右
+        {
+            frame.origin = CGPointMake(0, -OffsetY);
+        }
+            break;
+            
+        default:
+            break;
+    }
+    frame.size = CGSizeMake(screenSize.width-statusBarHeight, screenSize.height + OffsetY);
     
     self.safariVC.view.frame = frame;
 }
