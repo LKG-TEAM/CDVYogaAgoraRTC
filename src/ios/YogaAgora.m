@@ -225,7 +225,7 @@
     CGSize screenSize = UIScreen.mainScreen.bounds.size;
     CGRect frame = self.safariVC.view.frame;
     CGFloat OffsetY = 44;
-    CGFloat statusBarHeight = 20;
+    CGFloat statusBarHeight = 0;
     if (@available(iOS 11.0, *)) {
         if ([UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
             statusBarHeight = 44;
