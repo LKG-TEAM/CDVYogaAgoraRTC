@@ -12,6 +12,7 @@
 @property (nonatomic, strong) SFSafariViewController *safariVC;
 @property (nonatomic, strong) UIView *overView;
 @property (nonatomic, strong) YogaAgoraViewController *yogaAgoraViewController;
+@property (nonatomic, assign) UIDeviceOrientation lastDeviceOrientatio;
 
 @end
 
@@ -162,9 +163,31 @@
             NSLog(@"竖屏");
             [self safariFrameV];
             break;
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationFaceDown:
+        {
+            NSLog(@"朝上或朝下");
+            [self safariFrameV];
+            switch (self.lastDeviceOrientatio) {
+                case UIDeviceOrientationPortrait:
+                    NSLog(@"竖屏");
+                    [self safariFrameV];
+                    break;
+                case UIDeviceOrientationLandscapeLeft:
+                    NSLog(@"左屏");
+                    [self safariFrameH:0];
+                    break;
+                case UIDeviceOrientationLandscapeRight:
+                    NSLog(@"右屏");
+                    [self safariFrameH:1];
+                    break;
+                default:
+                    break;
+            }
+        }
+            break;
         case UIDeviceOrientationPortraitUpsideDown:
             NSLog(@"倒屏");
-//            [self safariFrameV];
             break;
         case UIDeviceOrientationLandscapeLeft:
             NSLog(@"左屏");
@@ -176,6 +199,9 @@
             break;
         default:
             break;
+    }
+    if (o != UIDeviceOrientationPortraitUpsideDown) {
+        self.lastDeviceOrientatio = o;
     }
 }
 
