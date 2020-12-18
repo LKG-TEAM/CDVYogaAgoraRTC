@@ -1,6 +1,5 @@
 /********* YogaAgora.m Cordova Plugin Implementation *******/
 
-#import <SafariServices/SafariServices.h>
 #import <Cordova/CDV.h>
 #import "YogaAgoraShared.h"
 #import "YogaAgoraUtil.h"
@@ -103,7 +102,7 @@
                     url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:firstArgument ofType:@""]];
                 }
                 self.safariVC = [[SFSafariViewController alloc] initWithURL:url];
-                self.safariVC.modalPresentationStyle = UIModalPresentationFullScreen;
+//                self.safariVC.modalPresentationStyle = UIModalPresentationFullScreen;
                 self.safariVC.delegate = self.yogaAgoraViewController;
                 self.safariVC.transitioningDelegate = self.yogaAgoraViewController; ///禁用侧滑
                 
@@ -218,7 +217,11 @@
             frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY + (OffsetY-20));
         }else {
             frame.origin = CGPointMake(0, -OffsetY);
-            frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY*2);
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY);
+            }else {
+                frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY*2);
+            }
         }
     }
     return frame;
@@ -234,6 +237,9 @@
     if (@available(iOS 11.0, *)) {
         if ([UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
             frame.origin = CGPointMake(0, 0);
+            if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                frame.origin = CGPointMake(0, -OffsetY);
+            }
             frame.size = CGSizeMake(screenSize.width, screenSize.height + OffsetY);
         }else {
             frame = [self _safariFrameViOS13Support:frame];
@@ -243,6 +249,7 @@
     }
     
     self.safariVC.view.frame = frame;
+    [_overView setFrame:CGRectMake(0, 0, UIScreen.mainScreen.bounds.size.width, UIApplication.sharedApplication.statusBarFrame.size.height)];
 }
 
 - (void)safariFrameH:(int)o
@@ -251,6 +258,10 @@
     CGSize screenSize = UIScreen.mainScreen.bounds.size;
     CGRect frame = self.safariVC.view.frame;
     CGFloat OffsetY = 44;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        [self addOverView];
+    }
+    
     CGFloat statusBarHeight = 0;
     if (@available(iOS 11.0, *)) {
         if ([UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
