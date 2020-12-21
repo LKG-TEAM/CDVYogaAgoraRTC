@@ -264,7 +264,7 @@
     
     CGFloat statusBarHeight = 0;
     if (@available(iOS 11.0, *)) {
-        if ([UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
+        if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad && [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0) {// 刘海屏
             statusBarHeight = 44;
         }
     }
