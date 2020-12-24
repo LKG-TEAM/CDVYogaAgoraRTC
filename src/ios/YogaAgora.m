@@ -260,6 +260,7 @@
     CGFloat OffsetY = 44;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         [self addOverView];
+        OffsetY = 24;
     }
     
     CGFloat statusBarHeight = 0;
